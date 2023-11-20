@@ -21,8 +21,6 @@ public class IRoadTrip {
             if (borders != "borders.txt" || capdist != "capdist.csv" || state_name != "state_name.tsv") {
                 System.out.println("Invalid file names");
             }
-            // read files
-            
 
         } catch (Exception e) {
             System.out.println("IRoadTrip - constructor");

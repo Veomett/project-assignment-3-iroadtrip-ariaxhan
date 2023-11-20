@@ -6,27 +6,14 @@ public class IRoadTrip {
 /*
  * Constructor
  * @param args command line arguments
- * files: borders.txt capdist.csv state_name.tsv. 
- * Read the files and prepare to execute the implementation to respond to requests. 
- * The implementation must halt on any failure here.
+ * This function is the constructor for the IRoadTrip class. The
+args parameter contains the names of the files as provided to main — i.e. an array (in order):
+1 The United States occupied Haiti from 1915-1934. See wikipedia for details.
+borders.txt capdist.csv state_name.tsv. The constructor must read the files and prepare to
+execute the implementation to respond to requests. The implementation must halt on any failure here.
  */
     public IRoadTrip (String [] args) {
         // Replace with your code
-        try {
-            // get file names
-            String borders = args[0];
-            String capdist = args[1];
-            String state_name = args[2];
-            // check file names
-            if (borders != "borders.txt" || capdist != "capdist.csv" || state_name != "state_name.tsv") {
-                System.out.println("Invalid file names");
-            }
-            // read files
-            
-
-        } catch (Exception e) {
-            System.out.println("IRoadTrip - constructor");
-        }
     }
 
 

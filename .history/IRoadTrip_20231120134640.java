@@ -13,16 +13,12 @@ public class IRoadTrip {
     public IRoadTrip (String [] args) {
         // Replace with your code
         try {
-            // get file names
             String borders = args[0];
             String capdist = args[1];
             String state_name = args[2];
-            // check file names
             if (borders != "borders.txt" || capdist != "capdist.csv" || state_name != "state_name.tsv") {
-                System.out.println("Invalid file names");
+                System.out.println("Invalid ");
             }
-            // read files
-            
 
         } catch (Exception e) {
             System.out.println("IRoadTrip - constructor");
