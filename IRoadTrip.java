@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Scanner;
 
 public class IRoadTrip {
+
   String country1;
   String country2;
   HashMap<String, String> capDistMap = new HashMap<String, String>();
@@ -21,26 +22,32 @@ public class IRoadTrip {
   public IRoadTrip(String[] args) {
     try {
       // get file names
-      String borders = args[0];
-      String capdist = args[1];
-      String state_name = args[2];
+      String borders = args[0].trim();
+      String capdist = args[1].trim();
+      String state_name = args[2].trim();
       // check file names
-      if (borders != "borders.txt" ||
-          capdist != "capdist.csv" ||
-          state_name != "state_name.tsv") {
+      if (borders.equals("borders.txt") &&
+          capdist.equals("capdist.csv") &&
+          state_name.equals("state_name.tsv")) {
+        // if file names are valid, read them in
+        readFile(capdist, capDistMap, ",");
+        readFile(state_name, stateNameMap, "\\t");
+      } else {
         System.out.println("Invalid file names");
+        System.out.println("borders: " + borders);
+        System.out.println("capdist: " + capdist);
+        System.out.println("state_name: " + state_name);
       }
-      // read files and put in hashmap
-      readFile(capdist, this.capDistMap, ",");
-      readFile(state_name, this.stateNameMap, "\t");
-
     } catch (Exception e) {
-      System.out.println("Error 1" + e);
+      System.out.println("Error in IRoadTrip: " + e);
     }
   }
-  
+
   // function to read in the files and use the putinHash function to put in hashmap
-  public void readFile(String filename, HashMap<String, String> mapName, String divider) {
+  public void readFile(
+      String filename,
+      HashMap<String, String> mapName,
+      String divider) {
     String line;
     try {
       // read files using buffered reader
@@ -48,25 +55,32 @@ public class IRoadTrip {
       // read in the first line for the keys
       line = reader.readLine();
       System.out.println(line);
+      System.out.println(divider);
+
       String[] keys = line.split(divider);
       // put keys in an array
       while (line != null) {
-        System.out.println(line);
-        line = reader.readLine();
-        putinHash(line, divider, keys, mapName);
+        //  System.out.println(line);
+        if (line != null) { // Check if the line is not null before processing
+          putinHash(line, divider, keys, mapName);
+        }
+        // close the reader
+        reader.close();
+        // read in borders
+        // get distance between two hashmaps
+        // ignore border length
       }
-      // close the reader
-      reader.close();
-      // read in borders
-      // get distance between two hashmaps
-      // ignore border length
     } catch (Exception e) {
-      System.out.println("Error " + e);
+      System.out.println("Error in readFile: " + e);
     }
   }
 
-// function to put specific lines in the specified hashmap
-  public void putinHash(String line, String divider, String[] keys, HashMap<String, String> mapName) {
+  // function to put specific lines in the specified hashmap
+  public void putinHash(
+      String line,
+      String divider,
+      String[] keys,
+      HashMap<String, String> mapName) {
     String[] lineArray = line.split(divider);
     for (int i = 0; i < keys.length; i++) {
       String key = keys[i];
@@ -75,12 +89,46 @@ public class IRoadTrip {
     }
   }
 
+  public class Graph {
+    private class Node {
+      boolean known;
+      int path;
+      int cost;
+    }
+
+    // use Integer max value instead of infinity for path and cost
+    int i = Integer.MAX_VALUE;
+
+    // select least cost unknown vertex and make it known
+    // update cost of unknown vertices adjacent to known vertex
+    // repeat until all vertices are known
+
+    // int v = least_cost_unknown_vertex();
+
+    // known(v) = true;
+    // for (int n = 0; n < v; n++) {
+    // if (cost(n) > cost(v) + edge_weight(v, n)
+    // update distance(n, v);
+    // update path(n, v);
+    // while v not null
+    // }
+
+    // Node[] nodes = 
+    // adjacency list
+    // adjacency matrix
+    // create a public function called 
+    // dijkstras (int v) {
+
+  }
+
+}
+
   /* This function provides the shortest path distance between the capitals of the two countries passed as arguments. 
     If either of the countries does not exist or if the countries do not share a land border, 
     this function must return a value of -1.
     */
   public int getDistance(String country1, String country2) {
-    // Replace with your code
+    //
     return -1;
   }
 
@@ -95,6 +143,12 @@ public class IRoadTrip {
   public List<String> findPath(String country1, String country2) {
     // create empty list to return
     List<String> path = new ArrayList<String>();
+    // use bfs to find path if edge paths are all the same
+    // if edge paths are not the same, use dijkstra's algorithm
+    // set up a table and use directed, weighted graph 
+    // use hashmap to store the table
+    // use hashmap to store the graph
+
     return path;
   }
 
@@ -145,3 +199,7 @@ public class IRoadTrip {
     roadTrip.acceptUserInput();
   }
 }
+
+// just put country name
+// only use country names, not the capital names
+
