@@ -104,43 +104,38 @@ public class readFiles {
 			// get the first value, the country name
 			String countryName = fullLine[0].trim();
             String borders = fullLine[1].trim();
-			System.out.println("country name " + countryName + " borders " + borders);
+			//System.out.println("country name " + countryName);
 			// if there are no borders, the country is invalid
 			if (borders.equals(" ")) {
+				//System.out.println("Invalid country: " + countryName);
 				continue;
 			} // otherwise, split by semicolon 
 			else {
 				String[] borderArray = borders.split(";");
 				for (int k = 0; k < borderArray.length; k++) {
-					System.out.println("borderarray entry: " + borderArray[k]);
+					//System.out.println("borderarray entry: " + borderArray[k]);
 				}
 				// for each border, split into key and value based on space
 				for (int i = 0; i < borderArray.length; i++) {
 					String[] border = borderArray[i].trim().split(" ");
-					ArrayList<String> onlyBorders = new ArrayList<>(Arrays.asList(border));
+					ArrayList<String> onlyBorders = new ArrayList<String>();
 				for (int m = 0; m < border.length; m++) {
-					// check if border is empty
-					if (border[m].equals(" ")) {
-						onlyBorders.remove(border[m]);
-					} // check if it's a distance
-					else if (isInteger(border[m]) == true) {
-								onlyBorders.remove(border[m]);
-					} else if (border[m].equals("km")) {
-						onlyBorders.remove(border[m]);
-					} else {
-					
+					// check for invalid characters and add to arraylist
+					if (!border[m].equals("") && !border[m].equals("km") && !isInteger(border[m]) && !border[m].equals(" ")) {
+						onlyBorders.add(border[m]);
 					}
 				}
 				for (int n = 0; n < onlyBorders.size(); n++) {
-				System.out.println("only borders: " + onlyBorders);
-				}
+				System.out.println("only borders: " + onlyBorders.get(n));
+
 					// if the border is not empty, put in hashmap
-					for (int j = 0; j < border.length; j++) {
-					if (!border[0].equals("")) {
-						String key = countryName + "_" + border[0];
-						String borderExists = "true";
+					
+					if (!onlyBorders.get(n).equals("")) {
+						String key = countryName + "_" + onlyBorders.get(n);
+						String borderExists = "true \n";
 						mapName.put(key, borderExists);}
-					}
+					
+				}
 				}
 			}
 		}
@@ -154,7 +149,8 @@ public class readFiles {
     if (str == null) {
         return false;
     }
-    return str.matches("\\d+"); // regex for digits
+	// regex for digits, courtesy of chatGPT
+    return str.matches("\\d{1,3}([,.]\\d{3})*");
 }
 
 }

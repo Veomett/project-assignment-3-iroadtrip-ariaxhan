@@ -1,52 +1,37 @@
 
 public class Graph {
     // use Integer max value instead of infinity for path and cost
-    int INFINITY = Integer.MAX_VALUE;
-
+    private final int INFINITY = Integer.MAX_VALUE;
+    private Map<String, Node> nodes; // Each node is identified by a string 
+    HashMap<String, String> capDistMap = new HashMap<String, String>();HashMap<String, String> stateNameMap = new HashMap<String, String>();HashMap<String, String> bordersMap = new HashMap<String, String>();   
+    
+    // inner class to represent each node in the graph
     private class Node {
-      boolean known;
-      int path;
-      int cost;
+        String name; // node identifier, like country name
+        boolean known; // to check if the shortest path to this node is already found
+        int path; // to store the previous node in the shortest path
+        int cost; // to store the cost to reach this node from the source
+        Map<Node, Integer> adjacent; // adjacency list for the node with costs
+
+        // constructor for node
+        Node(String name) {
+            // initialize the node with the given name and default values for other fields
+        }
     }
 
-
-    int n = graph.size(); // Number of nodes, aka countries
-    // make a matrix where x and y are each a country, identified by country code
-    String[][] adjacencyMatrix = new String[x][y];
-    // if two countries share a border, they are connected
-    // set each spot between two countries to the distance between them
-    // use the appropriate hash maps to extract country codes and distances
-    // capdist: country1_country2, distance
-    // state_name: countrycode_countryname, date
-    // borders: countryname1_countryname2, 1 or 0 to represent shared border
-    for (int i = 0; i < n; i++) {
-      List<Integer> edges = graph.get(i);
-      int distance = 
-      for (int j : edges) {
-        adjacencyMatrix[i][j] = distance;
+    // constructor for the graph class
+    public Graph() {
+        // initialize the graph, hashmaps, nodes, etc.
     }
+
+    // method to build the graph from data (hashmaps)
+    private void buildGraph() {
+        // populate the nodes and their adjacency lists using the provided hashmaps
+    }
+
+    // dijkstra's algorithm for finding shortest paths
+    public void dijkstra(String startNode) {
+        // implement dijkstra's algorithm starting from the given node
+    }
+
 }
-
-
-
-    // select least cost unknown vertex and make it known
-    // update cost of unknown vertices adjacent to known vertex
-    // repeat until all vertices are known
-
-    // int v = least_cost_unknown_vertex();
-
-    // known(v) = true;
-    // for (int n = 0; n < v; n++) {
-    // if (cost(n) > cost(v) + edge_weight(v, n)
-    // update distance(n, v);
-    // update path(n, v);
-    // while v not null
-    // }
-
-    // Node[] nodes = 
-    // adjacency list
-    // adjacency matrix
-    // create a public function called 
-    // dijkstras (int v) {
-
-    }
