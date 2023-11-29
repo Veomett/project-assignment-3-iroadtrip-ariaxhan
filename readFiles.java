@@ -9,6 +9,7 @@ public class readFiles {
 
 	// constructor
 	public readFiles(HashMap<String, String> capDistMap, HashMap<String, String> stateNameMap, HashMap<String, String> bordersMap) {
+		System.out.println("Enterted readFiles constructor...");
 		readCapDist(capDistMap);
 		readStateName(stateNameMap);
 		readBorders(bordersMap);
@@ -16,9 +17,7 @@ public class readFiles {
   
   // read capdist
   public void readCapDist(HashMap<String, String> mapName) {
-	// set up lines and return keys
-	String key = "";
-	String value = "";
+	System.out.println("Starting readCapDist...");
 	// read files using buffered reader
 	try {
 		BufferedReader reader1 = new BufferedReader(new FileReader("capdist.csv"));
@@ -26,21 +25,25 @@ public class readFiles {
       String strCurrentLine;
       String[] currentValues;
       while ((strCurrentLine = reader1.readLine()) != null) {
+		// set up lines and return keys
+		String key = "";
+		String value = "";
        // split current line
        currentValues = strCurrentLine.split(",");
-        for (int i = 0; i < currentValues.length; i++){
+        for (int i = 1; i < currentValues.length; i++){
           // get the second and fourth values, which are the country names
           if (i == 1) {
             key += currentValues[i] + "_";
           } else if (i == 3) {
             key += currentValues[i];
           } else if (i == 4) {
-            value += currentValues[i];
+            value += currentValues[i] + "\n";
           } else {
 			continue;
 		  }
        }
        mapName.put(key, value);
+	  // System.out.println("Key: " + key + " Value: " + value);
        }
 
 	} catch (Exception e) {
@@ -50,15 +53,16 @@ public class readFiles {
 
   // read state_name
   public void readStateName(HashMap<String, String> mapName) {
-	// set up lines and return keys
-	String key = "";
-	String value = "";
+	System.out.println("Starting readStateName...");
 // read files using buffered reader
 	try {
 		BufferedReader reader2 = new BufferedReader(new FileReader("state_name.tsv"));
       String strCurrentLine;
       String[] currentValues;
       while ((strCurrentLine = reader2.readLine()) != null) {
+			// set up lines and return keys
+	String key = "";
+	String value = "";
        // split current line based on tab
 	   currentValues = strCurrentLine.split("\t");
         for (int i = 0; i < currentValues.length; i++){
@@ -68,7 +72,7 @@ public class readFiles {
           } else if (i == 2) {
             key += currentValues[i];
           } else if (i == 4) {
-            value += currentValues[i];
+            value += currentValues[i]  + "\n";
           } else {
 			continue;
 		  }
@@ -82,21 +86,31 @@ public class readFiles {
 
   // read borders
   public void readBorders(HashMap<String, String> mapName) {
-	// set up lines and return keys
-	String key = "";
-	String value = "";
+	System.out.println("Starting readBorders...");
 	// read files using buffered reader
 	try {
 		BufferedReader reader3 = new BufferedReader(new FileReader("borders.txt"));
 		// read each line, split by '='
 		String strCurrentLine;
 		while ((strCurrentLine = reader3.readLine()) != null) {
+			System.out.println(strCurrentLine);
 			// split line 
 			String[] fullLine = strCurrentLine.split("=");
+			 if (fullLine.length < 2) {
+				System.out.println("Invalid line format: " + strCurrentLine);
+				continue;
+            }
 			// get the first value, the country name
 			String countryName = fullLine[0].trim();
+            String borders = fullLine[1].trim();
+            if (borders.isEmpty()) {
+                continue;
+            }
+			String countryName = fullLine[0].trim();
+			System.out.println(countryName);
 			// get the second value, the borders
 			String borders = fullLine[1];
+			System.out.println(borders);
 			// if there are no borders, the country is invalid
 			if (borders.equals(" ")) {
 				continue;
@@ -109,7 +123,7 @@ public class readFiles {
 					// if the border is not empty, put in hashmap
 					if (!border[0].equals("")) {
 						key = countryName + "_" + border[0];
-						value = border[1];
+						value = border[1] + "\n";
 						mapName.put(key, value);}
 				}
 			}

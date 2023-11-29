@@ -21,6 +21,7 @@ public class IRoadTrip {
    * The implementation must halt on any failure here.
    */
   public IRoadTrip(String[] args) {
+    System.out.println("Loading constructor...");
     try {
       // get file names
       String borders = args[0].trim();
@@ -30,14 +31,17 @@ public class IRoadTrip {
       if (borders.equals("borders.txt") &&
           capdist.equals("capdist.csv") &&
           state_name.equals("state_name.tsv")) {
+       System.out.println("Filenames validated, starting reading...");
         // create object to read files
         readFiles files = new readFiles(capDistMap, stateNameMap, bordersMap);
+         System.out.println("Files read, printing...");
         // Print size and content of the Maps
         System.out.println("Size of map is: " + capDistMap.size());
         System.out.println("Size of second map is: " + stateNameMap.size());
         // Printing elements in object of Map
         System.out.println(capDistMap);
         System.out.println(stateNameMap);
+        System.out.println(bordersMap);
       } else {
         System.out.println("Invalid file names");
         System.out.println("borders: " + borders);
@@ -141,6 +145,7 @@ public class IRoadTrip {
   }
 
   public static void main(String[] args) {
+    System.out.println("Starting IRoadTrip...");
     IRoadTrip roadTrip = new IRoadTrip(args);
     //roadTrip.acceptUserInput();
   }
