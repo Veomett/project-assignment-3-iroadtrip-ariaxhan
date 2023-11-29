@@ -1,17 +1,33 @@
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Scanner;
+
+public class readFiles {
+
+	// constructor
+	public readFiles(HashMap<String, String> capDistMap, HashMap<String, String> stateNameMap, HashMap<String, String> bordersMap) {
+		readCapDist(capDistMap);
+		readStateName(stateNameMap);
+		readBorders(bordersMap);
+	}
+  
   // read capdist
-  public readCapDist(HashMap<String, String> mapName) {
+  public void readCapDist(HashMap<String, String> mapName) {
 	// set up lines and return keys
 	String key = "";
 	String value = "";
 	// read files using buffered reader
 	try {
-		BufferedReader reader1 = new BufferedReader(new FileReader(capdist.csv));
+		BufferedReader reader1 = new BufferedReader(new FileReader("capdist.csv"));
 		 // put each value in a list
       String strCurrentLine;
       String[] currentValues;
       while ((strCurrentLine = reader1.readLine()) != null) {
        // split current line
-       currentValues = strCurrentLine.split(divider);
+       currentValues = strCurrentLine.split(",");
         for (int i = 0; i < currentValues.length; i++){
           // get the second and fourth values, which are the country names
           if (i == 1) {
@@ -39,8 +55,26 @@
 	String value = "";
 // read files using buffered reader
 	try {
-		BufferedReader reader2 = new BufferedReader(new FileReader(state_name.tsv));
-
+		BufferedReader reader2 = new BufferedReader(new FileReader("state_name.tsv"));
+      String strCurrentLine;
+      String[] currentValues;
+      while ((strCurrentLine = reader2.readLine()) != null) {
+       // split current line based on tab
+	   currentValues = strCurrentLine.split("\t");
+        for (int i = 0; i < currentValues.length; i++){
+          // get the second and fourth values, which are the country names
+          if (i == 1) {
+            key += currentValues[i] + "_";
+          } else if (i == 2) {
+            key += currentValues[i];
+          } else if (i == 4) {
+            value += currentValues[i];
+          } else {
+			continue;
+		  }
+       }
+       mapName.put(key, value);
+       }	
 	} catch (Exception e) {
       System.out.println("Error in readFile: " + e);
 	  }
@@ -54,46 +88,34 @@
 	// read files using buffered reader
 	try {
 		BufferedReader reader3 = new BufferedReader(new FileReader("borders.txt"));
+		// read each line, split by '='
+		String strCurrentLine;
+		while ((strCurrentLine = reader3.readLine()) != null) {
+			// split line 
+			String[] fullLine = strCurrentLine.split("=");
+			// get the first value, the country name
+			String countryName = fullLine[0].trim();
+			// get the second value, the borders
+			String borders = fullLine[1];
+			// if there are no borders, the country is invalid
+			if (borders.equals(" ")) {
+				continue;
+			} // otherwise, split by semicolon 
+			else {
+				String[] borderArray = borders.split(";");
+				// for each border, split into key and value based on space
+				for (int i = 0; i < borderArray.length; i++) {
+					String[] border = borderArray[i].split(" ");
+					// if the border is not empty, put in hashmap
+					if (!border[0].equals("")) {
+						key = countryName + "_" + border[0];
+						value = border[1];
+						mapName.put(key, value);}
+				}
+			}
+		}
 	} catch (Exception e) {
       System.out.println("Error in readFile: " + e);
 	  }
 	  }
-
-  // function to read in the files and use the putinHash function to put in hashmap
-  public void readFiles( String filename, HashMap<String, String> mapName, String divider) {
-         // set up lines and return keys
-         String key = "";
-         String value = "";
-    try {
-      // read files using buffered reader
-      BufferedReader reader = new BufferedReader(new FileReader(filename));
-      // continue reading till end of file
-      // put each value in a list
-      String strCurrentLine;
-      String[] currentValues;
-      while ((strCurrentLine = reader.readLine()) != null) {
-       // split current line
-       currentValues = strCurrentLine.split(divider);
-        for (int i = 0; i < currentValues.length; i++){
-          // get the second and fourth values, which are the country names
-          if (i == 1) {
-            key += currentValues[i] + "_";
-          } else if (i == 3) {
-            key += currentValues[i];
-          }
-          // get the 5th, which is the distance
-          if (i == 4) {
-            value += currentValues[i];
-          }
-       }
-       mapName.put(key, value);
-       }
-      
-      // close the reader
-      reader.close();
-      
-    } catch (Exception e) {
-      System.out.println("Error in readFile: " + e);
-      }
-    
-      }
+}

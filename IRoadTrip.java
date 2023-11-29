@@ -11,6 +11,7 @@ public class IRoadTrip {
   String country2;
   HashMap<String, String> capDistMap = new HashMap<String, String>();
   HashMap<String, String> stateNameMap = new HashMap<String, String>();
+  HashMap<String, String> bordersMap = new HashMap<String, String>();
 
   /*
    * Constructor
@@ -29,11 +30,9 @@ public class IRoadTrip {
       if (borders.equals("borders.txt") &&
           capdist.equals("capdist.csv") &&
           state_name.equals("state_name.tsv")) {
-        // if file names are valid, read and put in map
-        readFiles(capdist, capDistMap, ",");
-        readFiles(state_name, stateNameMap, "\\t");
-        // then read the rest of the files
-        // Print size and content of the Map
+        // create object to read files
+        readFiles files = new readFiles(capDistMap, stateNameMap, bordersMap);
+        // Print size and content of the Maps
         System.out.println("Size of map is: " + capDistMap.size());
         System.out.println("Size of second map is: " + stateNameMap.size());
         // Printing elements in object of Map
@@ -55,18 +54,18 @@ public class IRoadTrip {
     // get distance between two hashmaps
     // ignore border length
     // function to put specific lines in the specified hashmap
-  public void putinHash(
-      String line,
-      String divider,
-      String[] keys,
-      HashMap<String, String> mapName) {
-    String[] lineArray = line.split(divider);
-    for (int i = 0; i < keys.length; i++) {
-      String key = keys[i];
-      String value = lineArray[i];
-      mapName.put(key, value);
-    }
-  }
+  // public void putinHash(
+  //     String line,
+  //     String divider,
+  //     String[] keys,
+  //     HashMap<String, String> mapName) {
+  //   String[] lineArray = line.split(divider);
+  //   for (int i = 0; i < keys.length; i++) {
+  //     String key = keys[i];
+  //     String value = lineArray[i];
+  //     mapName.put(key, value);
+  //   }
+  // }
   
 
 
