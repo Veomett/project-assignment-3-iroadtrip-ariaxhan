@@ -10,6 +10,25 @@ public class Graph {
     }
 
 
+    int n = graph.size(); // Number of nodes, aka countries
+    // make a matrix where x and y are each a country, identified by country code
+    String[][] adjacencyMatrix = new String[x][y];
+    // if two countries share a border, they are connected
+    // set each spot between two countries to the distance between them
+    // use the appropriate hash maps to extract country codes and distances
+    // capdist: country1_country2, distance
+    // state_name: countrycode_countryname, date
+    // borders: countryname1_countryname2, 1 or 0 to represent shared border
+    for (int i = 0; i < n; i++) {
+      List<Integer> edges = graph.get(i);
+      int distance = 
+      for (int j : edges) {
+        adjacencyMatrix[i][j] = distance;
+    }
+}
+
+
+
     // select least cost unknown vertex and make it known
     // update cost of unknown vertices adjacent to known vertex
     // repeat until all vertices are known

@@ -39,9 +39,9 @@ public class IRoadTrip {
         System.out.println("Size of map is: " + capDistMap.size());
         System.out.println("Size of second map is: " + stateNameMap.size());
         // Printing elements in object of Map
-        System.out.println(capDistMap);
+      //  System.out.println(capDistMap);
         System.out.println(stateNameMap);
-        System.out.println(bordersMap);
+      //  System.out.println(bordersMap);
       } else {
         System.out.println("Invalid file names");
         System.out.println("borders: " + borders);

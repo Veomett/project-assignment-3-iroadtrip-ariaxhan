@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Scanner;
+import java.util.Arrays;
 
 public class readFiles {
 
@@ -93,7 +94,7 @@ public class readFiles {
 		// read each line, split by '='
 		String strCurrentLine;
 		while ((strCurrentLine = reader3.readLine()) != null) {
-			System.out.println(strCurrentLine);
+			System.out.println("current line: " + strCurrentLine);
 			// split line 
 			String[] fullLine = strCurrentLine.split("=");
 			 if (fullLine.length < 2) {
@@ -103,28 +104,43 @@ public class readFiles {
 			// get the first value, the country name
 			String countryName = fullLine[0].trim();
             String borders = fullLine[1].trim();
-            if (borders.isEmpty()) {
-                continue;
-            }
-			String countryName = fullLine[0].trim();
-			System.out.println(countryName);
-			// get the second value, the borders
-			String borders = fullLine[1];
-			System.out.println(borders);
+			System.out.println("country name " + countryName + " borders " + borders);
 			// if there are no borders, the country is invalid
 			if (borders.equals(" ")) {
 				continue;
 			} // otherwise, split by semicolon 
 			else {
 				String[] borderArray = borders.split(";");
+				for (int k = 0; k < borderArray.length; k++) {
+					System.out.println("borderarray entry: " + borderArray[k]);
+				}
 				// for each border, split into key and value based on space
 				for (int i = 0; i < borderArray.length; i++) {
-					String[] border = borderArray[i].split(" ");
+					String[] border = borderArray[i].trim().split(" ");
+					ArrayList<String> onlyBorders = new ArrayList<>(Arrays.asList(border));
+				for (int m = 0; m < border.length; m++) {
+					// check if border is empty
+					if (border[m].equals(" ")) {
+						onlyBorders.remove(border[m]);
+					} // check if it's a distance
+					else if (isInteger(border[m]) == true) {
+								onlyBorders.remove(border[m]);
+					} else if (border[m].equals("km")) {
+						onlyBorders.remove(border[m]);
+					} else {
+					
+					}
+				}
+				for (int n = 0; n < onlyBorders.size(); n++) {
+				System.out.println("only borders: " + onlyBorders);
+				}
 					// if the border is not empty, put in hashmap
+					for (int j = 0; j < border.length; j++) {
 					if (!border[0].equals("")) {
-						key = countryName + "_" + border[0];
-						value = border[1] + "\n";
-						mapName.put(key, value);}
+						String key = countryName + "_" + border[0];
+						String borderExists = "true";
+						mapName.put(key, borderExists);}
+					}
 				}
 			}
 		}
@@ -132,4 +148,13 @@ public class readFiles {
       System.out.println("Error in readFile: " + e);
 	  }
 	  }
+
+	  
+	  public static boolean isInteger(String str) {
+    if (str == null) {
+        return false;
+    }
+    return str.matches("\\d+"); // regex for digits
+}
+
 }
