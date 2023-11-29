@@ -29,16 +29,16 @@ public class IRoadTrip {
       if (borders.equals("borders.txt") &&
           capdist.equals("capdist.csv") &&
           state_name.equals("state_name.tsv")) {
-        // if file names are valid, read and store keys
-        String[] capKeys = getKeys(capdist, capDistMap, ",");
-        String[] stateKeys = getKeys(state_name, stateNameMap, "\\t");
+        // if file names are valid, read and put in map
+        readFiles(capdist, capDistMap, ",");
+        readFiles(state_name, stateNameMap, "\\t");
         // then read the rest of the files
         // Print size and content of the Map
-        System.out.println("Size of map is:- " + capDistMap.size());
+        System.out.println("Size of map is: " + capDistMap.size());
+        System.out.println("Size of second map is: " + stateNameMap.size());
         // Printing elements in object of Map
         System.out.println(capDistMap);
-        
-
+        System.out.println(stateNameMap);
       } else {
         System.out.println("Invalid file names");
         System.out.println("borders: " + borders);
@@ -50,47 +50,11 @@ public class IRoadTrip {
     }
   }
 
-  // function to read in the files and use the putinHash function to put in hashmap
-  public String[] getKeys(
-      String filename,
-      HashMap<String, String> mapName,
-      String divider) {
-      // set up lines and return keys
-      String keyLine = "";
-      String[] keys = {};
-      String[] currentValues = {};
-    try {
-      // read files using buffered reader
-      BufferedReader reader = new BufferedReader(new FileReader(filename));
-      // read in the first line for the keys
-      keyLine = reader.readLine();
-      //System.out.println(keyLine);
-      // put keys in an array
-      keys = keyLine.split(divider);
-      // continue reading till end of file
-      String strCurrentLine;
-      while ((strCurrentLine = reader.readLine()) != null) {
-       // split current line
-       currentValues = strCurrentLine.split(divider);
-       // put in hashmap
-       for (int i = 0; i < currentValues.length; i++){
-        mapName.put(keys[i],currentValues[i]); 
-       }
-      }
 
-        // // close the reader
-      reader.close();;
-      
-    } catch (Exception e) {
-      System.out.println("Error in readFile: " + e);
-    }
-    return keys;
-  }
-
-          // read in borders
-        // get distance between two hashmaps
-        // ignore border length
-  // function to put specific lines in the specified hashmap
+    // read in borders
+    // get distance between two hashmaps
+    // ignore border length
+    // function to put specific lines in the specified hashmap
   public void putinHash(
       String line,
       String divider,
@@ -103,19 +67,6 @@ public class IRoadTrip {
       mapName.put(key, value);
     }
   }
-
-  // public void printHash(HashMap<String, String> printHash) {
-  //   while ((strCurrentLine = reader.readLine()) != null) {
-  //     System.out.println(strCurrentLine);
-  //     // split current line
-  //     currentValues = strCurrentLine.split(divider);
-  //     // put in hashmap
-  //     for (int i = 0; i < currentValues.length; i++){
-  //      mapName.put(keys[i],currentValues[i]); 
-  //     }
-  //   System.out.println("Mapping of hashmap is " + printHash);
-  //   }
-  // }
   
 
 
