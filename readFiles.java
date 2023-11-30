@@ -11,11 +11,49 @@ public class readFiles {
 	// constructor
 	public readFiles(HashMap<String, String> capDistMap, HashMap<String, String> stateNameMap, HashMap<String, String> bordersMap) {
 		System.out.println("Enterted readFiles constructor...");
+		readStateName(stateNameMap, capDistMap);
 		readCapDist(capDistMap);
-		readStateName(stateNameMap);
-		readBorders(bordersMap);
+		readBorders(bordersMap, stateNameMap);
 	}
   
+
+  // read state_name
+  public void readStateName(HashMap<String, String> mapName) {
+	System.out.println("Starting readStateName...");
+// read files using buffered reader
+	try {
+		BufferedReader reader2 = new BufferedReader(new FileReader("state_name.tsv"));
+      String strCurrentLine;
+      String[] currentValues;
+      while ((strCurrentLine = reader2.readLine()) != null) {
+			// set up lines and return keys
+	String key = "";
+	String value = "";
+       // split current line based on tab
+	   currentValues = strCurrentLine.split("\t");
+        for (int i = 0; i < currentValues.length; i++){
+          // get the second and fourth values, which are the country names
+          if (i == 1) {
+            key += currentValues[i] + "_";
+          } else if (i == 2) {
+            key += currentValues[i];
+          } else if (i == 4) {
+            value += currentValues[i]  + "\n";
+          } else {
+			continue;
+		  }
+       }
+	   // make sure the country still exists, aka the date is 2020-12-31
+	   if (value.equals("2020-12-31\n")){
+       mapName.put(key, value);
+	   }
+       }	
+	} catch (Exception e) {
+      System.out.println("Error in readFile: " + e);
+	  }
+	  }
+
+
   // read capdist
   public void readCapDist(HashMap<String, String> mapName) {
 	System.out.println("Starting readCapDist...");
@@ -44,46 +82,12 @@ public class readFiles {
 		  }
        }
        mapName.put(key, value);
-	  // System.out.println("Key: " + key + " Value: " + value);
        }
 
 	} catch (Exception e) {
       System.out.println("Error in readFile: " + e);
 	  }
   }
-
-  // read state_name
-  public void readStateName(HashMap<String, String> mapName) {
-	System.out.println("Starting readStateName...");
-// read files using buffered reader
-	try {
-		BufferedReader reader2 = new BufferedReader(new FileReader("state_name.tsv"));
-      String strCurrentLine;
-      String[] currentValues;
-      while ((strCurrentLine = reader2.readLine()) != null) {
-			// set up lines and return keys
-	String key = "";
-	String value = "";
-       // split current line based on tab
-	   currentValues = strCurrentLine.split("\t");
-        for (int i = 0; i < currentValues.length; i++){
-          // get the second and fourth values, which are the country names
-          if (i == 1) {
-            key += currentValues[i] + "_";
-          } else if (i == 2) {
-            key += currentValues[i];
-          } else if (i == 4) {
-            value += currentValues[i]  + "\n";
-          } else {
-			continue;
-		  }
-       }
-       mapName.put(key, value);
-       }	
-	} catch (Exception e) {
-      System.out.println("Error in readFile: " + e);
-	  }
-	  }
 
   // read borders
   public void readBorders(HashMap<String, String> mapName) {
