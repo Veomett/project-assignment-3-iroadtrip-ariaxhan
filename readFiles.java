@@ -2,18 +2,17 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
-import java.util.Scanner;
-import java.util.Arrays;
 
 public class readFiles {
 
-	// constructor
-	public readFiles(HashMap<String, String> capDistMap, HashMap<String, String> stateNameMap, HashMap<String, String> bordersMap) {
-		System.out.println("Enterted readFiles constructor...");
-		readStateName(stateNameMap, capDistMap);
-		readCapDist(capDistMap);
-		readBorders(bordersMap, stateNameMap);
+	public readFiles(HashMap<String, String> stateNameMap, HashMap<String, Integer> capDistMap,
+			HashMap<String, String> bordersMap) {
+		// read in state names and make keys
+		readStateName(stateNameMap);
+		// use previously made map to filter out invalid countries
+		readCapDist(capDistMap, stateNameMap);
+		// use previously made map to filter out invalid countries
+		readBorders(bordersMap, capDistMap);
 	}
   
 
@@ -21,16 +20,19 @@ public class readFiles {
   public void readStateName(HashMap<String, String> mapName) {
 	System.out.println("Starting readStateName...");
 // read files using buffered reader
-	try {
+try {
+		// make reader
 		BufferedReader reader2 = new BufferedReader(new FileReader("state_name.tsv"));
+		// make string and string array to hold values
       String strCurrentLine;
-      String[] currentValues;
-      while ((strCurrentLine = reader2.readLine()) != null) {
-			// set up lines and return keys
-	String key = "";
-	String value = "";
+		String[] currentValues;
+	  // loop through file and set each line as the current line
+		while ((strCurrentLine = reader2.readLine()) != null) {
        // split current line based on tab
-	   currentValues = strCurrentLine.split("\t");
+		currentValues = strCurrentLine.split("\t");
+		// place each part of the line in the appropriate place
+		String key = "";
+		String value = "";
         for (int i = 0; i < currentValues.length; i++){
           // get the second and fourth values, which are the country names
           if (i == 1) {
@@ -44,8 +46,8 @@ public class readFiles {
 		  }
        }
 	   // make sure the country still exists, aka the date is 2020-12-31
-	   if (value.equals("2020-12-31\n")){
-       mapName.put(key, value);
+		if (value.equals("2020-12-31\n")) {
+		mapName.put(key, value);
 	   }
        }	
 	} catch (Exception e) {
@@ -55,32 +57,36 @@ public class readFiles {
 
 
   // read capdist
-  public void readCapDist(HashMap<String, String> mapName) {
+  public void readCapDist(HashMap<String, Integer> mapName, HashMap<String, String> stateNameMap) {
 	System.out.println("Starting readCapDist...");
 	// read files using buffered reader
 	try {
 		BufferedReader reader1 = new BufferedReader(new FileReader("capdist.csv"));
 		 // put each value in a list
       String strCurrentLine;
-      String[] currentValues;
+		String[] currentValues;
+	  // loop through file and set each line as the current line
       while ((strCurrentLine = reader1.readLine()) != null) {
 		// set up lines and return keys
 		String key = "";
-		String value = "";
-       // split current line
+		int value = 0;
+       // split current line based on comma
        currentValues = strCurrentLine.split(",");
-        for (int i = 1; i < currentValues.length; i++){
-          // get the second and fourth values, which are the country names
-          if (i == 1) {
-            key += currentValues[i] + "_";
-          } else if (i == 3) {
-            key += currentValues[i];
-          } else if (i == 4) {
-            value += currentValues[i] + "\n";
-          } else {
-			continue;
-		  }
-       }
+		for (int i = 1; i < currentValues.length; i++) {
+			// get the second and fourth values, which are the country names
+			if (i == 1) {
+				key += currentValues[i] + "_";
+			} else if (i == 3) {
+				key += currentValues[i];
+				// get the fifth value, which is the distance
+			} else if (i == 4) {
+				value = Integer.parseInt(currentValues[i]);
+			} else {
+				continue;
+			}
+		}
+		// compare against stateNameMap to make sure the country still exists
+	   
        mapName.put(key, value);
        }
 
@@ -90,7 +96,7 @@ public class readFiles {
   }
 
   // read borders
-  public void readBorders(HashMap<String, String> mapName) {
+  public void readBorders(HashMap<String, String> mapName, HashMap<String, Integer> capDistMap) {
 	System.out.println("Starting readBorders...");
 	// read files using buffered reader
 	try {

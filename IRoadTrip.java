@@ -1,5 +1,3 @@
-import java.io.BufferedReader;
-import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -9,8 +7,8 @@ public class IRoadTrip {
 
   String country1;
   String country2;
-  HashMap<String, String> capDistMap = new HashMap<String, String>();
   HashMap<String, String> stateNameMap = new HashMap<String, String>();
+  HashMap<String, Integer> capDistMap = new HashMap<String, Integer>();
   HashMap<String, String> bordersMap = new HashMap<String, String>();
 
   /*
@@ -24,54 +22,29 @@ public class IRoadTrip {
     System.out.println("Loading constructor...");
     try {
       // get file names
-      String borders = args[0].trim();
-      String capdist = args[1].trim();
       String state_name = args[2].trim();
+      String capdist = args[1].trim();
+      String borders = args[0].trim();
       // check file names
-      if (borders.equals("borders.txt") &&
-          capdist.equals("capdist.csv") &&
-          state_name.equals("state_name.tsv")) {
+      if (state_name.equals("state_name.tsv") && capdist.equals("capdist.csv") && borders.equals("borders.txt") ) {
        System.out.println("Filenames validated, starting reading...");
         // create object to read files
-        readFiles files = new readFiles(capDistMap, stateNameMap, bordersMap);
+        readFiles files = new readFiles(stateNameMap, capDistMap, bordersMap);
          System.out.println("Files read, printing...");
-        // Print size and content of the Maps
-        System.out.println("Size of map is: " + capDistMap.size());
-        System.out.println("Size of second map is: " + stateNameMap.size());
         // Printing elements in object of Map
-        System.out.println(capDistMap);
         System.out.println(stateNameMap);
+        System.out.println(capDistMap);
        System.out.println(bordersMap);
       } else {
         System.out.println("Invalid file names");
-        System.out.println("borders: " + borders);
-        System.out.println("capdist: " + capdist);
         System.out.println("state_name: " + state_name);
+        System.out.println("capdist: " + capdist);
+        System.out.println("borders: " + borders);
       }
     } catch (Exception e) {
       System.out.println("Error in IRoadTrip: " + e);
     }
   }
-
-
-    // read in borders
-    // get distance between two hashmaps
-    // ignore border length
-    // function to put specific lines in the specified hashmap
-  // public void putinHash(
-  //     String line,
-  //     String divider,
-  //     String[] keys,
-  //     HashMap<String, String> mapName) {
-  //   String[] lineArray = line.split(divider);
-  //   for (int i = 0; i < keys.length; i++) {
-  //     String key = keys[i];
-  //     String value = lineArray[i];
-  //     mapName.put(key, value);
-  //   }
-  // }
-  
-
 
   /* This function provides the shortest path distance between the capitals of the two countries passed as arguments. 
     If either of the countries does not exist or if the countries do not share a land border, 
