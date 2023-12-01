@@ -9,7 +9,7 @@ public class IRoadTrip {
   String country2;
   HashMap<String, String> stateNameMap = new HashMap<String, String>();
   HashMap<String, Integer> capDistMap = new HashMap<String, Integer>();
-  HashMap<String, String> bordersMap = new HashMap<String, String>();
+  HashMap<String, List<String>> bordersMap = new HashMap<String, List<String>>();
 
   /*
    * Constructor
@@ -33,7 +33,7 @@ public class IRoadTrip {
          System.out.println("Files read, printing...");
         // Printing elements in object of Map
         System.out.println(stateNameMap);
-        System.out.println(capDistMap);
+      //  System.out.println(capDistMap);
        System.out.println(bordersMap);
       } else {
         System.out.println("Invalid file names");
