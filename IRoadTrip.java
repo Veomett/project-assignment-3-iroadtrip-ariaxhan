@@ -33,7 +33,7 @@ public class IRoadTrip {
          System.out.println("Files read, printing...");
         // Printing elements in object of Map
         System.out.println(stateNameMap);
-      //  System.out.println(capDistMap);
+        System.out.println(capDistMap);
        System.out.println(bordersMap);
       } else {
         System.out.println("Invalid file names");

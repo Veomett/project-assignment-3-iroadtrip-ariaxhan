@@ -31,14 +31,15 @@ public class readFiles {
 				// split current line based on tab
 				currentValues = strCurrentLine.split("\t");
 				// place each part of the line in the appropriate place
-				String key = "";
+				String c1 = "";
+				String c2 = "";
 				String value = "";
 				for (int i = 0; i < currentValues.length; i++) {
 					// get the second and fourth values, which are the country names
 					if (i == 1) {
-						key += currentValues[i] + "_";
+						c1 = currentValues[i];
 					} else if (i == 2) {
-						key += currentValues[i];
+						c2 += currentValues[i];
 					} else if (i == 4) {
 						value += currentValues[i] + "\n";
 					} else {
@@ -47,7 +48,7 @@ public class readFiles {
 				}
 				// make sure the country still exists, aka the date is 2020-12-31
 				if (value.equals("2020-12-31\n")) {
-					mapName.put(key, value);
+					mapName.put(c1, c2);
 				}
 			}
 		} catch (Exception e) {
