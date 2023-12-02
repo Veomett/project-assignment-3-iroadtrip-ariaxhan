@@ -5,11 +5,13 @@ import java.util.HashMap;
 import java.util.List;
 
 public class readFiles {
+	// list to hold all countries
+	public List<String> totalCountryList = new ArrayList<String>();
 
 	public readFiles(HashMap<String, String> stateNameMap, HashMap<String, Integer> capDistMap,
-			HashMap<String, List<String>> bordersMap) {
+			HashMap<String, List<String>> bordersMap, List<String> totalCountryList) {
 		// read in state names and make keys
-		readStateName(stateNameMap);
+		readStateName(stateNameMap, totalCountryList);
 		// use previously made map to filter out invalid countries
 		readCapDist(capDistMap, stateNameMap);
 		// use previously made map to filter out invalid countries
@@ -17,7 +19,7 @@ public class readFiles {
 	}
 
 	// read state_name
-	public void readStateName(HashMap<String, String> mapName) {
+	public void readStateName(HashMap<String, String> mapName, List<String> totalCountryList) {
 		System.out.println("Starting readStateName...");
 		// read files using buffered reader
 		try {
@@ -48,6 +50,9 @@ public class readFiles {
 				}
 				// make sure the country still exists, aka the date is 2020-12-31
 				if (value.equals("2020-12-31\n")) {
+					// add to total country list
+					totalCountryList.add(c1);
+					// add to hashmap
 					mapName.put(c1, c2);
 				}
 			}

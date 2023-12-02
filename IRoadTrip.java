@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Scanner;
 
 public class IRoadTrip {
+  // list to hold all countries
+    public List<String> totalCountryList = new ArrayList<String>();
 
   String country1;
   String country2;
@@ -29,12 +31,12 @@ public class IRoadTrip {
       if (state_name.equals("state_name.tsv") && capdist.equals("capdist.csv") && borders.equals("borders.txt") ) {
        System.out.println("Filenames validated, starting reading...");
         // create object to read files
-        readFiles files = new readFiles(stateNameMap, capDistMap, bordersMap);
+        readFiles files = new readFiles(stateNameMap, capDistMap, bordersMap, totalCountryList);
          System.out.println("Files read, printing...");
         // Printing elements in object of Map
-        System.out.println(stateNameMap);
-        System.out.println(capDistMap);
-       System.out.println(bordersMap);
+       // System.out.println(stateNameMap);
+      //  System.out.println(capDistMap);
+      //System.out.println(bordersMap);
       } else {
         System.out.println("Invalid file names");
         System.out.println("state_name: " + state_name);
