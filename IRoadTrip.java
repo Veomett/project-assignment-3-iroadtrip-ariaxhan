@@ -35,7 +35,7 @@ public class IRoadTrip {
          System.out.println("Files read, printing...");
         // Printing elements in object of Map
        //System.out.println(stateNameMap);
-        System.out.println(capDistMap);
+        //System.out.println(capDistMap);
     //    System.out.println(bordersMap);
       } else {
         System.out.println("Invalid file names");
@@ -53,8 +53,24 @@ public class IRoadTrip {
     this function must return a value of -1.
     */
   public int getDistance(String country1, String country2) {
-    //
-    return -1;
+    //initialize distance to be -1
+    int distance = -1;
+    // get both country names
+    // get each country code from name
+    try {
+      String country1Code = stateNameMap.get(country1);
+      String country2Code = stateNameMap.get(country2);
+      //System.out.println(country1Code + " " + country2Code);
+      /*  use country codes to get distance
+      distance = capDistMap.get((String) country1Code + "_" + (String) country2Code);
+      System.out.println(distance);
+      System.out.println("distance: " + distance);
+      */ 
+      return distance;
+    } catch (Exception e) {
+      System.out.println("Error in getDistance: " + e);
+    }
+    return distance;
   }
 
   /*
@@ -126,6 +142,7 @@ public class IRoadTrip {
     HashMap<String, Integer> capDistMap = roadTrip.capDistMap;
     HashMap<String, String> stateNameMap = roadTrip.stateNameMap;
     HashMap<String, List<String>> bordersMap = roadTrip.bordersMap;
+   // roadTrip.getDistance("Spain", "France");
     //roadTrip.acceptUserInput();
     System.out.println("Starting graph...");
     Graph graph = new Graph();
