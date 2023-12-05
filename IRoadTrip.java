@@ -24,19 +24,19 @@ public class IRoadTrip {
     System.out.println("Loading constructor...");
     try {
       // get file names
-      String state_name = args[2].trim();
+      String state_name = args[0].trim();
       String capdist = args[1].trim();
-      String borders = args[0].trim();
+      String borders = args[2].trim();
       // check file names
       if (state_name.equals("state_name.tsv") && capdist.equals("capdist.csv") && borders.equals("borders.txt") ) {
        System.out.println("Filenames validated, starting reading...");
         // create object to read files
-        readFiles files = new readFiles(stateNameMap, capDistMap, bordersMap, totalCountryList);
+        readFiles files = new readFiles(stateNameMap, capDistMap, bordersMap);
          System.out.println("Files read, printing...");
         // Printing elements in object of Map
-       // System.out.println(stateNameMap);
-      //  System.out.println(capDistMap);
-      //System.out.println(bordersMap);
+       System.out.println(stateNameMap);
+     //   System.out.println(capDistMap);
+    //    System.out.println(bordersMap);
       } else {
         System.out.println("Invalid file names");
         System.out.println("state_name: " + state_name);
@@ -123,6 +123,11 @@ public class IRoadTrip {
     System.out.println("Starting IRoadTrip...");
     IRoadTrip roadTrip = new IRoadTrip(args);
     //roadTrip.acceptUserInput();
+    System.out.println("Starting graph...");
+    Graph graph = new Graph();
+    System.out.println("Graph object made..");
+    graph.buildGraph();
+    System.out.println("Graph built...");
   }
 }
 
