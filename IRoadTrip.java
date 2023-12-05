@@ -34,8 +34,8 @@ public class IRoadTrip {
         readFiles files = new readFiles(stateNameMap, capDistMap, bordersMap);
          System.out.println("Files read, printing...");
         // Printing elements in object of Map
-       System.out.println(stateNameMap);
-     //   System.out.println(capDistMap);
+       //System.out.println(stateNameMap);
+        System.out.println(capDistMap);
     //    System.out.println(bordersMap);
       } else {
         System.out.println("Invalid file names");
@@ -122,11 +122,15 @@ public class IRoadTrip {
   public static void main(String[] args) {
     System.out.println("Starting IRoadTrip...");
     IRoadTrip roadTrip = new IRoadTrip(args);
+    // get hashmaps 
+    HashMap<String, Integer> capDistMap = roadTrip.capDistMap;
+    HashMap<String, String> stateNameMap = roadTrip.stateNameMap;
+    HashMap<String, List<String>> bordersMap = roadTrip.bordersMap;
     //roadTrip.acceptUserInput();
     System.out.println("Starting graph...");
     Graph graph = new Graph();
     System.out.println("Graph object made..");
-    graph.buildGraph();
+    graph.buildGraph(capDistMap,stateNameMap, bordersMap);
     System.out.println("Graph built...");
   }
 }

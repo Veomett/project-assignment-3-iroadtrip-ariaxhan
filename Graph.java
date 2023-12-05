@@ -29,46 +29,93 @@ public class Graph {
     public Graph() {}
 
     // method to build the graph from data (hashmaps)
-    public void buildGraph() {
-        // first use the borders hashmap to get the names of the countries that border each country
-        System.out.println("BuildGraph function entered");
-        // get country codes and corresponding country names from state map
-        // use country name to get corresponding list of border countries
-        // use country code to get corresponding distance
+   public void buildGraph(HashMap<String, Integer> capDistMap, HashMap<String, String> stateNameMap,
+        HashMap<String, List<String>> bordersMap) {
+    System.out.println("BuildGraph function entered");
 
-        // get all of the country names from the state name hashmap
-        Set<String> countryCode = stateNameMap.keySet();
-        // loop over the country codes
+    // Get all of the country codes from the state name hashmap
+    Set<String> countryCode = stateNameMap.keySet();
+    System.out.println(countryCode);
 
-        String countryString = stateNameMap.get(countryCode);
-        // get all of the keys from the borders hashmap
-        Set<String> countryKeys = bordersMap.keySet();
-        for (String country : countryKeys) {
-            String currentCountryString = country;
-            // create inner hashmap with strings for each country and corresponding integers
-            HashMap<String, Integer> innerHashMap = new HashMap<String, Integer>();
-            System.out.println("Current country: " + currentCountryString);
-            // get the list of bordering countries for the current country
-            List<String> borderingCountries = bordersMap.get(country);
-            System.out.println("Bordering countries for " + currentCountryString + ": " + borderingCountries);
-            // add each bordering country to the inner hashmap
-            for (String borderingCountry : borderingCountries) {
-                innerHashMap.put(borderingCountry, capDistMap.get(currentCountryString + "_" + borderingCountry));
+    String previousCountry = null; // Initialize previousCountry outside the loop
+
+    // Loop over the country codes
+    for (String country : countryCode) {
+        if (previousCountry != null) {
+            System.out.println("Country: " + country);
+            
+            // Get the country name
+            String countryString = stateNameMap.get(country);
+            System.out.println("Country string: " + countryString);
+            
+            // Get list of bordering countries
+            List<String> borderingCountries = bordersMap.get(countryString);
+            // check if bordering countries exist
+            if (borderingCountries == null) {
+                System.out.println("No bordering countries for " + countryString);
+                continue;
             }
-            // put inner hashmap into the graph
-            graph.put(currentCountryString, innerHashMap);
-            System.out.println(currentCountryString + ": " + innerHashMap);
+            System.out.println("Bordering countries: " + borderingCountries);
+            System.out.println("Next country: " + previousCountry);
+            System.out.println("Country: " + country + " Previous country: " + previousCountry);
+
+            // Form the key for the distance map
+            String key = country + "_" + previousCountry;
+            if (capDistMap.containsKey(key)) {
+                int distance = capDistMap.get(key);
+                System.out.println("Distance: " + distance);
+                System.out.println(country + ": " + borderingCountries + " " + distance);
+                
+            } else {
+                System.out.println("No distance data for key: " + key);
+            }
+            // add to graph
+            for (String borderingCountry : borderingCountries) {
+                // create inner hashmap with strings for each country and corresponding integers
+                HashMap<String, Integer> innerHashMap = new HashMap<String, Integer>();
+                // get country code for bordering country string
+                String borderingCountryCode = stateNameMap.get(borderingCountry);
+                // add each bordering country to the inner hashmap
+                innerHashMap.put(borderingCountry, capDistMap.get(country + "_" + borderingCountryCode));
+                // put inner hashmap into the graph
+                graph.put(country, innerHashMap);
+                System.out.println(country + ": " + innerHashMap);
+            }
 
         }
-        
-        // for each country, get the list of its bordering countries
-        // loop over the list of bordering countries and add them to the inner hashmap
-        // use state name map to get the country code for each country
-        // replace the country name with the country code
-        // use the capdist hashmap to get the distance between the two countries
-        // add distance and country 2 name to the graph
-        // use another hashmap to store the aliases 
+        previousCountry = country; // Update previousCountry at the end of the loop
     }
+}
+
+            // // get all of the keys from the borders hashmap
+            // Set<String> countryKeys = bordersMap.keySet();
+            // for (String country : countryKeys) {
+            //     String currentCountryString = country;
+            //     // create inner hashmap with strings for each country and corresponding integers
+            //     HashMap<String, Integer> innerHashMap = new HashMap<String, Integer>();
+            //     System.out.println("Current country: " + currentCountryString);
+            //     // get the list of bordering countries for the current country
+            //     List<String> borderingCountries = bordersMap.get(country);
+            //     System.out.println("Bordering countries for " + currentCountryString + ": " + borderingCountries);
+            //     // add each bordering country to the inner hashmap
+            //     for (String borderingCountry : borderingCountries) {
+            //         innerHashMap.put(borderingCountry, capDistMap.get(currentCountryString + "_" + borderingCountry));
+            //     }
+            //     // put inner hashmap into the graph
+            //     graph.put(currentCountryString, innerHashMap);
+            //     System.out.println(currentCountryString + ": " + innerHashMap);
+
+            // }
+
+            // for each country, get the list of its bordering countries
+            // loop over the list of bordering countries and add them to the inner hashmap
+            // use state name map to get the country code for each country
+            // replace the country name with the country code
+            // use the capdist hashmap to get the distance between the two countries
+            // add distance and country 2 name to the graph
+            // use another hashmap to store the aliases 
+        
+
     // dijkstra's algorithm for finding shortest paths
     public void dijkstra(String source, String destination) {
         // implement dijkstra's algorithm
