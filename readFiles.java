@@ -135,11 +135,12 @@ public class readFiles {
 				// make sure to exclude islands
 				if (borderCountries.size() > 0) {
 
-						mapName.put(countryName, borderCountries);
-					
+					mapName.put(countryName, borderCountries);
+
 				}
 
 			}
+			reader3.close();
 		} catch (Exception e) {
 			System.out.println("Error in readFile: " + e);
 		}

@@ -131,7 +131,3 @@ public class IRoadTrip {
   }
 }
 
-
-// just put country name
-// only use country names, not the capital names
-
