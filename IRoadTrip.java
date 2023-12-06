@@ -184,7 +184,7 @@ public class IRoadTrip {
     Graph graph = new Graph(capDistMap, stateNameMap, bordersMap, reverseStateMap, edgeCases, edgeCasesbyString);
     System.out.println("Graph object made..");
     graph.buildGraph();
-    // graph.printGraph();
+     graph.printGraph();
     System.out.println("Graph built...");
     String inputCountries = roadTrip.acceptUserInput();
     // string split to get input countries
