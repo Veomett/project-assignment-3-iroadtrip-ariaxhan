@@ -1,11 +1,8 @@
 
-import java.io.BufferedReader;
-import java.io.FileReader;
 import java.util.HashMap;
 import java.util.List;
 import java.util.PriorityQueue;
 import java.util.Set;
-
 
 public class Graph {
     // use Integer max value instead of infinity for path and cost
@@ -14,128 +11,56 @@ public class Graph {
     HashMap<String, String> stateNameMap = new HashMap<String, String>();
     HashMap<String, List<String>> bordersMap = new HashMap<String, List<String>>();
     // full graph, with a country name (code) as the key and a hashmap of adjacent countries and their distances as the value
-    HashMap<String,HashMap<String,Integer>> graph = new HashMap<String,HashMap<String,Integer>>(); 
+    HashMap<String, HashMap<String, Integer>> graph = new HashMap<String, HashMap<String, Integer>>();
 
-    /* constructor for the graph class
-    public Graph(HashMap<String, Integer> capDistMap, HashMap<String, String> stateNameMap,
-            HashMap<String, List<String>> bordersMap) {
-        // initialize the graph, hashmaps, nodes, etc.
-        this.capDistMap = capDistMap;
-        this.stateNameMap = stateNameMap;
-        this.bordersMap = bordersMap;
-        this.graph = new HashMap<String, HashMap<String, Integer>>();
-        buildGraph();
+    public Graph() {
     }
-    */
-    
-    public Graph() {}
 
     // method to build the graph from data (hashmaps)
-   public void buildGraph(HashMap<String, Integer> capDistMap, HashMap<String, String> stateNameMap,
-        HashMap<String, List<String>> bordersMap) {
-    System.out.println("BuildGraph function entered");
+    public void buildGraph(
+            HashMap<String, Integer> capDistMap,
+            HashMap<String, String> stateNameMap,
+            HashMap<String, List<String>> bordersMap) {
 
-    // Get all of the country codes from the state name hashmap
-    Set<String> countryCode = stateNameMap.keySet();
-    //System.out.println(countryCode);
+        System.out.println("BuildGraph function entered");
 
-    // Loop over the country codes
-    for (String country : countryCode) {
+        // Get all of the country codes from the state name hashmap
+        Set<String> countryCode = stateNameMap.keySet();
+        //System.out.println(countryCode);
+
+        // Loop over the country codes
+        for (String country : countryCode) {
             // Get the country name
             String countryString = stateNameMap.get(country);
-          //  System.out.println("Country string: " + countryString);
+            //  System.out.println("Country string: " + countryString);
             // Get list of bordering countries
             List<String> borderingCountries = bordersMap.get(countryString);
             // check if bordering countries exist
             if (borderingCountries == null) {
                 // check to see if it is an edge case
-                // read in edge cases file
-                // make reader
-			BufferedReader bufReader = new BufferedReader(new FileReader("state_name.tsv"));
-			// make string and string array to hold values
-			String strCurrentLine;
-			String[] currentValues;
-			// loop through file and set each line as the current line
-			while ((strCurrentLine = bufReader.readLine()) != null) {
-				// split current line based on tab
-				currentValues = strCurrentLine.split("\t");
-				// place each part of the line in the appropriate place
-				String code = "";
-				String stringBorders = "";
-				String stringState = "";
-                // loop through values to check if it is an edge case
-                for (int p = 0; p < currentValues.length; p++) {
-                    // get 0, which is the country code
-                    if (p == 0) {
-                        code = currentValues[p];
-                    } else if (p == 1) {
-                        stringState = currentValues[p];
-                    } else if (p == 3) {
-                        stringBorders = currentValues[p];
-                    } else {
-                        continue;
-                    }
+                // checkEdgeCase(countryString);
+            } else {
+                // loop over bordering countries, get codes, and add to graph
+                for (String borderingCountry : borderingCountries) {
+                    // create inner hashmap with strings for each country and corresponding integers
+                    HashMap<String, Integer> innerHashMap = new HashMap<String, Integer>();
+                    // System.out.println( "bordering country name: " + borderingCountry);
+                    // get country code for bordering country string
+                    String borderingCountryCode = stateNameMap.get(borderingCountry);
+                    // add each bordering country to the inner hashmap
+                    // get distance
+                    Integer distance = capDistMap.get(country + "_" + borderingCountryCode);
+                    System.out.println(distance);
+                    innerHashMap.put(borderingCountry, distance);
+                    // System.out.println("country " + country + " bordering country " + borderingCountryCode);
+                    // put inner hashmap into the graph
+                    graph.put(country, innerHashMap);
+                    //  System.out.println(country + ": " + innerHashMap);
                 }
-                // compare countryString to the stringBorders string
-                if (countryString.equals(stringState)) {
-                    // if they are equal, get the list of bordering countries
-                    // split the stringBorders string on commas
-                    String[] borderingCountriesArray = stringBorders.split(",");
-                    // add each bordering country to the list of bordering countries
-                    for (int i = 0; i < borderingCountriesArray.length; i++) {
-                        borderingCountries.add(borderingCountriesArray[i]);
-                    }
-                System.out.println("No bordering countries for " + countryString);
-                continue;
-                }
-            // loop over bordering countries, get codes, and add to graph
-            for (String borderingCountry : borderingCountries) {
-                // create inner hashmap with strings for each country and corresponding integers
-                HashMap<String, Integer> innerHashMap = new HashMap<String, Integer>();
-               // System.out.println( "bordering country name: " + borderingCountry);
-                // get country code for bordering country string
-                String borderingCountryCode = stateNameMap.get(borderingCountry);
-                // add each bordering country to the inner hashmap
-                innerHashMap.put(borderingCountry, capDistMap.get(country + "_" + borderingCountryCode));
-               // System.out.println("country " + country + " bordering country " + borderingCountryCode);
-                // put inner hashmap into the graph
-                graph.put(country, innerHashMap);
-              //  System.out.println(country + ": " + innerHashMap);
             }
 
-        
-            }
-}
+        }
     }
-
-            // // get all of the keys from the borders hashmap
-            // Set<String> countryKeys = bordersMap.keySet();
-            // for (String country : countryKeys) {
-            //     String currentCountryString = country;
-            //     // create inner hashmap with strings for each country and corresponding integers
-            //     HashMap<String, Integer> innerHashMap = new HashMap<String, Integer>();
-            //     System.out.println("Current country: " + currentCountryString);
-            //     // get the list of bordering countries for the current country
-            //     List<String> borderingCountries = bordersMap.get(country);
-            //     System.out.println("Bordering countries for " + currentCountryString + ": " + borderingCountries);
-            //     // add each bordering country to the inner hashmap
-            //     for (String borderingCountry : borderingCountries) {
-            //         innerHashMap.put(borderingCountry, capDistMap.get(currentCountryString + "_" + borderingCountry));
-            //     }
-            //     // put inner hashmap into the graph
-            //     graph.put(currentCountryString, innerHashMap);
-            //     System.out.println(currentCountryString + ": " + innerHashMap);
-
-            // }
-
-            // for each country, get the list of its bordering countries
-            // loop over the list of bordering countries and add them to the inner hashmap
-            // use state name map to get the country code for each country
-            // replace the country name with the country code
-            // use the capdist hashmap to get the distance between the two countries
-            // add distance and country 2 name to the graph
-            // use another hashmap to store the aliases 
-        
 
     // dijkstra's algorithm for finding shortest paths
     public void dijkstra(String source, String destination) {
@@ -166,8 +91,8 @@ public class Graph {
         }
         // initialize name of country
         String currentCountryName = "";
-            // while queue is not empty
-            while (!pq.isEmpty() && !currentCountryName.equals(destination)) {
+        // while queue is not empty
+        while (!pq.isEmpty() && !currentCountryName.equals(destination)) {
             //pull out the next priority item (country and distance)
             HashMap<String, Integer> currentItem = pq.poll();
             // get the country name
@@ -191,10 +116,61 @@ public class Graph {
                 }
             }
 
-            // proceed until you will have multiple paths for each country
-            // work backwards from destnation to source
-            // keep going until you get to the destination country
-            // use a hashmap to store the path
         }
+
     }
 }
+        
+        /* 
+    public void checkEdgeCase(String countryString) {
+        // check to see if it is an edge case
+        // read in edge cases file
+        // make reader
+        BufferedReader bufReader = new BufferedReader(new FileReader("edgecases.tsv"));
+        // make string and string array to hold values
+        String strCurrentLine;
+        String[] currentValues;
+        // loop through file and set each line as the current line
+        while ((strCurrentLine = bufReader.readLine()) != null) {
+            // split current line based on tab
+            currentValues = strCurrentLine.split("\t");
+            // place each part of the line in the appropriate place
+            String code = "";
+            String stringBorders = "";
+            String stringState = "";
+            // loop through values to check if it is an edge case
+            for (int p = 0; p < currentValues.length; p++) {
+                // get 0, which is the country code
+                if (p == 0) {
+                    code = currentValues[p];
+                } else if (p == 1) {
+                    stringState = currentValues[p];
+                } else if (p == 3) {
+                    stringBorders = currentValues[p];
+                } else {
+                    continue;
+                }
+            }
+            // compare countryString to the stringBorders string
+
+            if (countryString.equals(stringState)) {
+                // if they are equal, get the list of bordering countries
+                // split the stringBorders string on commas
+                String[] borderingCountriesArray = stringBorders.split(",");
+                // add each bordering country to the list of bordering countries
+                for (int i = 0; i < borderingCountriesArray.length; i++) {
+                    borderingCountries.add(borderingCountriesArray[i]);
+                }
+            } else {
+                System.out.println("No bordering countries for " + countryString);
+                continue;
+            }
+        }
+    }
+
+*/
+
+
+
+
+    

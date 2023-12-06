@@ -60,7 +60,7 @@ public class IRoadTrip {
     try {
       String country1Code = stateNameMap.get(country1);
       String country2Code = stateNameMap.get(country2);
-      //System.out.println(country1Code + " " + country2Code);
+      // System.out.println(country1Code + " " + country2Code);
       /*  use country codes to get distance
       distance = capDistMap.get((String) country1Code + "_" + (String) country2Code);
       System.out.println(distance);
