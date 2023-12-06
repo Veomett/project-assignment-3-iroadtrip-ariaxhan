@@ -145,13 +145,14 @@ public class IRoadTrip {
     HashMap<String, Integer> capDistMap = roadTrip.capDistMap;
     HashMap<String, String> stateNameMap = roadTrip.stateNameMap;
     HashMap<String, List<String>> bordersMap = roadTrip.bordersMap;
-    HashMap<String, String> reverseStateMap = roadTrip.reverseStateMap;HashMap<String, String> edgeCases = new HashMap<String, String>();
+    HashMap<String, String> reverseStateMap = roadTrip.reverseStateMap;HashMap<String, String> edgeCases = roadTrip.edgeCases;
    // roadTrip.getDistance("Spain", "France");
     //roadTrip.acceptUserInput();
     System.out.println("Starting graph...");
     Graph graph = new Graph();
     System.out.println("Graph object made..");
-    graph.buildGraph(capDistMap,stateNameMap, bordersMap, reverseStateMap);
+    graph.buildGraph(capDistMap, stateNameMap, bordersMap, reverseStateMap, edgeCases);
+    graph.printGraph();
     System.out.println("Graph built...");
   }
 }

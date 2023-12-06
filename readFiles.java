@@ -39,7 +39,7 @@ public class readFiles {
 			String stringState = "";
 			// loop through values to check if it is an edge case
 			for (int p = 0; p < currentValues.length; p++) {
-				System.out.println("current value at " + p + "is: " + currentValues[p]);
+			//	System.out.println("current value at " + p + "is: " + currentValues[p]);
 				// get 0, which is the country code
 				if (p == 0) {
 					code = currentValues[p];

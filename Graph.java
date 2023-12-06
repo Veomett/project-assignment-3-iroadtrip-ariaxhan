@@ -22,7 +22,8 @@ public class Graph {
             HashMap<String, Integer> capDistMap,
             HashMap<String, String> stateNameMap,
             HashMap<String, List<String>> bordersMap,
-            HashMap<String, String> reverseStateMap) {
+            HashMap<String, String> reverseStateMap,
+            HashMap<String, String> edgeCases) {
 
         System.out.println("BuildGraph function entered");
 
@@ -36,12 +37,23 @@ public class Graph {
             String countryString = stateNameMap.get(country);
             //  System.out.println("Country string: " + countryString);
             // Get list of bordering countries
-            List<String> borderingCountries = bordersMap.get(countryString);
+            List<String> borderingCountries = null;
+            borderingCountries = bordersMap.get(countryString);
             // check if bordering countries exist
             if (borderingCountries == null) {
-                // check to see if it is an edge case
-                // checkEdgeCase(countryString);
-            } else {
+                // check if it is an edge case
+                String countryasBorderString = checkEdgeCase(country, edgeCases);
+                // if it is an edge case
+                if (countryasBorderString != null) {
+                    borderingCountries = bordersMap.get(countryasBorderString);
+                    System.out.println("edge case: " + countryasBorderString);
+                } else {
+                    continue;
+                }
+            }
+            // check if bordering countries are still null
+            if (borderingCountries != null) {
+
                 // loop over bordering countries, get codes, and add to graph
                 for (String borderingCountry : borderingCountries) {
                     // create inner hashmap with strings for each country and corresponding integers
@@ -50,21 +62,25 @@ public class Graph {
                     // get country code for bordering country string
                     //System.out.println("bordering country: " + borderingCountry);
                     String borderingCountryCode = reverseStateMap.get(borderingCountry);
+                   
+                    System.out.println(borderingCountryCode + " is the code for " + borderingCountry);
                     // add each bordering country to the inner hashmap
                     // get distance
                     //  System.out.println(country + "_" + borderingCountryCode);
-                    Integer distance = capDistMap.get(country + "_" + borderingCountryCode);
-                    //System.out.println(distance);
+                    // get key
+                    String key = country + "_" + borderingCountryCode;
+                    Integer distance = capDistMap.get(key);
+                    System.out.println(key + " at " + distance);
                     innerHashMap.put(borderingCountry, distance);
                     // System.out.println("country " + country + " bordering country " + borderingCountryCode);
                     // put inner hashmap into the graph
                     graph.put(country, innerHashMap);
-                   // System.out.println(country + ": " + innerHashMap);
+                    // System.out.println(country + ": " + innerHashMap);
                 }
             }
-
         }
-    }
+        }
+    
 
     // dijkstra's algorithm for finding shortest paths
     public void dijkstra(String source, String destination) {
@@ -124,22 +140,30 @@ public class Graph {
 
     }
 
-    // public void compareCountryString(String countryString, ) {
-    //         // compare countryString to the stringBorders string
-    //         if (countryString.equals(stringState)) {
-    //             // if they are equal, get the list of bordering countries
-    //             // split the stringBorders string on commas
-    //             String[] borderingCountriesArray = stringBorders.split(",");
-    //             // add each bordering country to the list of bordering countries
-    //             for (int i = 0; i < borderingCountriesArray.length; i++) {
-    //                 borderingCountries.add(borderingCountriesArray[i]);
-    //             }
-    //         } else {
-    //             System.out.println("No bordering countries for " + countryString);
-    //             continue;
-    //         }
-    //     }
+    public String checkEdgeCase(String countryCode, HashMap<String, String> edgeCases) {
+        // check if given country code is in edge cases
+        for (String code : edgeCases.keySet()) {
+            if (countryCode.equals(code)) {
+                // get the corresponding string
+                String edgeCaseString = edgeCases.get(code);
+                // split the string on the underscore
+                String[] edgeCaseStringArray = edgeCaseString.split("_");
+                // get borders name
+                String bordersName = edgeCaseStringArray[0];
+                // return borders name
+                return bordersName;
+            }
+        }
+        // if not in edge cases, return null
+        return null;
     }
+    
+    public void printGraph() {
+        for (String country : graph.keySet()) {
+            System.out.println(country + ": " + graph.get(country));
+        }
+    }
+}
 
 
 
