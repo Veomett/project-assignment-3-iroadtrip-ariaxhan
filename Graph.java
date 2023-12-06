@@ -1,16 +1,20 @@
 
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Set;
 
 public class Graph {
     // use Integer max value instead of infinity for path and cost
     private final int INFINITY = Integer.MAX_VALUE;
+    /* 
     HashMap<String, Integer> capDistMap = new HashMap<String, Integer>();
     HashMap<String, String> stateNameMap = new HashMap<String, String>();
     HashMap<String, List<String>> bordersMap = new HashMap<String, List<String>>();
     HashMap<String, String> reverseStateMap = new HashMap<String, String>();
+    */
     // full graph, with a country name (code) as the key and a hashmap of adjacent countries and their distances as the value
     HashMap<String, HashMap<String, Integer>> graph = new HashMap<String, HashMap<String, Integer>>();
 
@@ -23,7 +27,8 @@ public class Graph {
             HashMap<String, String> stateNameMap,
             HashMap<String, List<String>> bordersMap,
             HashMap<String, String> reverseStateMap,
-            HashMap<String, String> edgeCases) {
+            HashMap<String, String> edgeCases,
+            HashMap<String, String> edgeCasesbyString) {
 
         System.out.println("BuildGraph function entered");
 
@@ -42,11 +47,11 @@ public class Graph {
             // check if bordering countries exist
             if (borderingCountries == null) {
                 // check if it is an edge case
-                String countryasBorderString = checkEdgeCase(country, edgeCases);
+                String countryasBorderString = checkEdgeCasebyCode(country, edgeCases);
                 // if it is an edge case
                 if (countryasBorderString != null) {
                     borderingCountries = bordersMap.get(countryasBorderString);
-                    System.out.println("edge case: " + countryasBorderString);
+                //    System.out.println("edge case: " + countryasBorderString);
                 } else {
                     continue;
                 }
@@ -57,90 +62,36 @@ public class Graph {
                 // loop over bordering countries, get codes, and add to graph
                 for (String borderingCountry : borderingCountries) {
                     // create inner hashmap with strings for each country and corresponding integers
-                    HashMap<String, Integer> innerHashMap = new HashMap<String, Integer>();
+                    HashMap<String, Integer> innerHashMap = graph.get(country);
+if (innerHashMap == null) {
+    innerHashMap = new HashMap<String, Integer>();
+}
                     // System.out.println( "bordering country name: " + borderingCountry);
                     // get country code for bordering country string
                     //System.out.println("bordering country: " + borderingCountry);
                     String borderingCountryCode = reverseStateMap.get(borderingCountry);
-                   
-                    System.out.println(borderingCountryCode + " is the code for " + borderingCountry);
+                    if (borderingCountryCode == null) {
+                        checkEdgeCasebyString(borderingCountry, edgeCasesbyString);
+                    }
+                //    System.out.println(borderingCountryCode + " is the code for " + borderingCountry);
                     // add each bordering country to the inner hashmap
                     // get distance
                     //  System.out.println(country + "_" + borderingCountryCode);
                     // get key
                     String key = country + "_" + borderingCountryCode;
                     Integer distance = capDistMap.get(key);
-                    System.out.println(key + " at " + distance);
+                 //   System.out.println(key + " at " + distance);
                     innerHashMap.put(borderingCountry, distance);
                     // System.out.println("country " + country + " bordering country " + borderingCountryCode);
                     // put inner hashmap into the graph
                     graph.put(country, innerHashMap);
-                    // System.out.println(country + ": " + innerHashMap);
+                     System.out.println(country + ": " + innerHashMap);
                 }
             }
         }
         }
-    
 
-    // dijkstra's algorithm for finding shortest paths
-    public void dijkstra(String source, String destination) {
-        // implement dijkstra's algorithm
-        // look at all of the items in the graph 
-        // priority queue to store each country name and distance 
-        PriorityQueue<HashMap<String, Integer>> pq = new PriorityQueue<HashMap<String, Integer>>();
-        // add all countries with distance as max int
-        // get string keys
-        Set<String> countryNameKeys = graph.keySet();
-        for (String country : countryNameKeys) {
-            // if country is equal to the source
-            // place it into the pq with a weight of 0
-            if (country.equals(source)) {
-                // get inner hashmap for corresponding country
-                HashMap<String, Integer> innerHashMap = graph.get(country);
-                // add to queue with distance of 0
-                innerHashMap.put(country, 0);
-                pq.add(innerHashMap);
-            } else {
-                // otherwise, add to queue with distance of infinity
-                // get inner hashmap for corresponding country
-                HashMap<String, Integer> innerHashMap = graph.get(country);
-                // add to queue with distance of infinity
-                innerHashMap.put(country, Math.abs(INFINITY));
-                pq.add(innerHashMap);
-            }
-        }
-        // initialize name of country
-        String currentCountryName = "";
-        // while queue is not empty
-        while (!pq.isEmpty() && !currentCountryName.equals(destination)) {
-            //pull out the next priority item (country and distance)
-            HashMap<String, Integer> currentItem = pq.poll();
-            // get the country name
-            currentCountryName = currentItem.keySet().toString();
-            // get the distance
-            int currentDistance = currentItem.get(currentCountryName);
-            // get the inner hashmap for the current country
-            HashMap<String, Integer> innerHashMap = graph.get(currentCountryName);
-            // get the keys for the inner hashmap
-            Set<String> innerHashMapKeys = innerHashMap.keySet();
-            // for each key in the inner hashmap
-            for (String key : innerHashMapKeys) {
-                // get the distance for the current key
-                int distance = innerHashMap.get(key);
-                // if the distance is less than the current distance
-                if (distance < currentDistance) {
-                    // update the distance
-                    currentDistance = distance;
-                    // update the country name
-                    currentCountryName = key;
-                }
-            }
-
-        }
-
-    }
-
-    public String checkEdgeCase(String countryCode, HashMap<String, String> edgeCases) {
+    public String checkEdgeCasebyCode(String countryCode, HashMap<String, String> edgeCases) {
         // check if given country code is in edge cases
         for (String code : edgeCases.keySet()) {
             if (countryCode.equals(code)) {
@@ -157,11 +108,82 @@ public class Graph {
         // if not in edge cases, return null
         return null;
     }
+     public String checkEdgeCasebyString(String countryString, HashMap<String, String> edgeCasesbyString) {
+        // check if given country code is in edge cases
+        for (String string : edgeCasesbyString.keySet()) {
+            if (string.equals(countryString)) {
+                // get the corresponding code
+                String code = edgeCasesbyString.get(string);
+                // return the code
+                return code;
+            }
+        }
+        // if not in edge cases, return null
+        return null;
+    }
     
     public void printGraph() {
         for (String country : graph.keySet()) {
             System.out.println(country + ": " + graph.get(country));
         }
+    }
+
+    // Dijkstra's algorithm to find the shortest path (courtesy of ChatGPT)
+    public List<String> dijkstra(String source, String destination) {
+        Map<String, Integer> distances = new HashMap<>();
+        Map<String, String> predecessors = new HashMap<>();
+        PriorityQueue<Map.Entry<String, Integer>> pq = new PriorityQueue<>((a, b) -> a.getValue() - b.getValue());
+
+        for (String country : graph.keySet()) {
+            distances.put(country, country.equals(source) ? 0 : INFINITY);
+            pq.offer(new HashMap.SimpleEntry<>(country, distances.get(country)));
+        }
+
+        while (!pq.isEmpty()) {
+            String currentCountry = pq.poll().getKey();
+            int currentDistance = distances.get(currentCountry);
+
+            if (currentDistance == INFINITY) continue;
+            if (currentCountry.equals(destination)) break;
+
+            for (Map.Entry<String, Integer> neighborEntry : graph.get(currentCountry).entrySet()) {
+                String neighbor = neighborEntry.getKey();
+                int edgeWeight = neighborEntry.getValue();
+                int newDistance = currentDistance + edgeWeight;
+
+                if (newDistance < distances.get(neighbor)) {
+                    distances.put(neighbor, newDistance);
+                    predecessors.put(neighbor, currentCountry);
+                    pq.offer(new HashMap.SimpleEntry<>(neighbor, newDistance));
+                }
+            }
+        }
+
+        return reconstructPath(predecessors, source, destination);
+    }
+
+    // Method to reconstruct the shortest path from source to destination
+    private List<String> reconstructPath(Map<String, String> predecessors, String source, String destination) {
+        LinkedList<String> path = new LinkedList<>();
+        String step = destination;
+
+        // Check if a path exists
+        if (predecessors.get(step) == null) {
+            return path; // empty list if no path is found
+        }
+
+        path.add(step);
+        while (predecessors.containsKey(step) && !step.equals(source)) {
+            step = predecessors.get(step);
+            path.addFirst(step); // add at the beginning
+        }
+
+        // Check if the source is reached
+        if (!path.getFirst().equals(source)) {
+            return new LinkedList<>(); // return an empty list if the source isn't reached
+        }
+
+        return path;
     }
 }
 

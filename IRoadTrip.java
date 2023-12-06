@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Scanner;
 
@@ -14,6 +15,7 @@ public class IRoadTrip {
   HashMap<String, List<String>> bordersMap = new HashMap<String, List<String>>();
   HashMap<String, String> reverseStateMap = new HashMap<String, String>();
   HashMap<String, String> edgeCases = new HashMap<String, String>();
+  HashMap<String, String> edgeCasesbyString = new HashMap<String, String>();
   /*
    * Constructor
    * @param args command line arguments
@@ -32,7 +34,7 @@ public class IRoadTrip {
       if (state_name.equals("state_name.tsv") && capdist.equals("capdist.csv") && borders.equals("borders.txt") ) {
        System.out.println("Filenames validated, starting reading...");
         // create object to read files
-        readFiles files = new readFiles(stateNameMap, capDistMap, bordersMap, reverseStateMap, edgeCases);
+        readFiles files = new readFiles(stateNameMap, capDistMap, bordersMap, reverseStateMap, edgeCases, edgeCasesbyString);
          System.out.println("Files read, printing...");
          // Printing elements in object of Map
     //    System.out.println("reverse State Map " + reverseStateMap + "\n");
@@ -84,14 +86,19 @@ public class IRoadTrip {
    * step in a longer path in the format: starting_country --> ending_country (DISTANCE_IN_KM.), eg:
    * Thailand --> Burma (573 km.)
    */
-  public List<String> findPath(String country1, String country2) {
+  public List<String> findPath(String country1, String country2, Graph graph) {
     // create empty list to return
     List<String> path = new ArrayList<String>();
     // use bfs to find path if edge paths are all the same
     // if edge paths are not the same, use dijkstra's algorithm
     // set up a table and use directed, weighted graph 
-    // use hashmap to store the table
-    // use hashmap to store the graph
+
+    //list to store path 
+    System.out.println(country1 + country2 + graph);
+    path = graph.dijkstra(country1, country2);
+    for (String s : path) {
+      System.out.println(s);
+    }
 
     return path;
   }
@@ -145,15 +152,20 @@ public class IRoadTrip {
     HashMap<String, Integer> capDistMap = roadTrip.capDistMap;
     HashMap<String, String> stateNameMap = roadTrip.stateNameMap;
     HashMap<String, List<String>> bordersMap = roadTrip.bordersMap;
-    HashMap<String, String> reverseStateMap = roadTrip.reverseStateMap;HashMap<String, String> edgeCases = roadTrip.edgeCases;
-   // roadTrip.getDistance("Spain", "France");
-    //roadTrip.acceptUserInput();
+    HashMap<String, String> reverseStateMap = roadTrip.reverseStateMap;
+    HashMap<String, String> edgeCases = roadTrip.edgeCases;
+    HashMap<String, String> edgeCasesbyString = roadTrip.edgeCasesbyString;
+   //roadTrip.acceptUserInput();
     System.out.println("Starting graph...");
     Graph graph = new Graph();
     System.out.println("Graph object made..");
-    graph.buildGraph(capDistMap, stateNameMap, bordersMap, reverseStateMap, edgeCases);
-    graph.printGraph();
+    graph.buildGraph(capDistMap, stateNameMap, bordersMap, reverseStateMap, edgeCases, edgeCasesbyString);
+  //  graph.printGraph();
     System.out.println("Graph built...");
+
+    // roadTrip.getDistance("Spain", "France");
+    roadTrip.findPath("", "France", graph);
+    System.out.println("Path found...");
   }
 }
 

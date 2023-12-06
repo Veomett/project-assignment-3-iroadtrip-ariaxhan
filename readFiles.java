@@ -6,9 +6,13 @@ import java.util.List;
 
 public class readFiles {
 	// constructor
-	public readFiles(HashMap<String, String> stateNameMap, HashMap<String, Integer> capDistMap,
-			HashMap<String, List<String>> bordersMap, HashMap<String, String> reverseStateMap,
-			HashMap<String, String> edgeCases) {
+	public readFiles(
+		HashMap<String, String> stateNameMap,
+	HashMap<String, Integer> capDistMap,
+			HashMap<String, List<String>> bordersMap,
+			HashMap<String, String> reverseStateMap,
+			HashMap<String, String> edgeCases,
+			HashMap<String, String> edgeCasesbyString) {
 		// read in state names and make keys
 		readStateName(stateNameMap, reverseStateMap);
 		// use previously made map to filter out invalid countries
@@ -16,11 +20,11 @@ public class readFiles {
 		// use previously made map to filter out invalid countries
 		readBorders(bordersMap, capDistMap);
 		// read in edge cases
-		readEdgeCases(edgeCases);
+		readEdgeCases(edgeCases, edgeCasesbyString);
 	}
 	
 	    // method to check if a country is an edge case
-		public void readEdgeCases(HashMap<String, String> edgeCases) {
+		public void readEdgeCases(HashMap<String, String> edgeCases, HashMap<String, String> edgeCasesbyString) {
 		try {
         // check to see if it is an edge case
         // read in edge cases file
@@ -53,6 +57,7 @@ public class readFiles {
 			}
 			// put in edge cases hashmap
 			edgeCases.put(code, stringState + "_" + stringBorders);
+			edgeCasesbyString.put(stringState, code);
 			//System.out.println();
 
 		}
