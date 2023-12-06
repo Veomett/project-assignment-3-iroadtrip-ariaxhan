@@ -12,6 +12,7 @@ public class IRoadTrip {
   HashMap<String, String> stateNameMap = new HashMap<String, String>();
   HashMap<String, Integer> capDistMap = new HashMap<String, Integer>();
   HashMap<String, List<String>> bordersMap = new HashMap<String, List<String>>();
+  HashMap<String, String> reverseStateMap = new HashMap<String, String>();
 
   /*
    * Constructor
@@ -31,12 +32,13 @@ public class IRoadTrip {
       if (state_name.equals("state_name.tsv") && capdist.equals("capdist.csv") && borders.equals("borders.txt") ) {
        System.out.println("Filenames validated, starting reading...");
         // create object to read files
-        readFiles files = new readFiles(stateNameMap, capDistMap, bordersMap);
+        readFiles files = new readFiles(stateNameMap, capDistMap, bordersMap, reverseStateMap);
          System.out.println("Files read, printing...");
-        // Printing elements in object of Map
-       //System.out.println(stateNameMap);
-        //System.out.println(capDistMap);
-    //    System.out.println(bordersMap);
+         // Printing elements in object of Map
+    //    System.out.println("reverse State Map " + reverseStateMap + "\n");
+    //   System.out.println("State Map " + stateNameMap);
+       // System.out.println("Cap Dist Map " + capDistMap);
+      //  System.out.println(bordersMap);
       } else {
         System.out.println("Invalid file names");
         System.out.println("state_name: " + state_name);
@@ -142,12 +144,13 @@ public class IRoadTrip {
     HashMap<String, Integer> capDistMap = roadTrip.capDistMap;
     HashMap<String, String> stateNameMap = roadTrip.stateNameMap;
     HashMap<String, List<String>> bordersMap = roadTrip.bordersMap;
+    HashMap<String, String> reverseStateMap = roadTrip.reverseStateMap;
    // roadTrip.getDistance("Spain", "France");
     //roadTrip.acceptUserInput();
     System.out.println("Starting graph...");
     Graph graph = new Graph();
     System.out.println("Graph object made..");
-    graph.buildGraph(capDistMap,stateNameMap, bordersMap);
+    graph.buildGraph(capDistMap,stateNameMap, bordersMap, reverseStateMap);
     System.out.println("Graph built...");
   }
 }

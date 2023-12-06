@@ -10,6 +10,7 @@ public class Graph {
     HashMap<String, Integer> capDistMap = new HashMap<String, Integer>();
     HashMap<String, String> stateNameMap = new HashMap<String, String>();
     HashMap<String, List<String>> bordersMap = new HashMap<String, List<String>>();
+    HashMap<String, String> reverseStateMap = new HashMap<String, String>();
     // full graph, with a country name (code) as the key and a hashmap of adjacent countries and their distances as the value
     HashMap<String, HashMap<String, Integer>> graph = new HashMap<String, HashMap<String, Integer>>();
 
@@ -20,7 +21,8 @@ public class Graph {
     public void buildGraph(
             HashMap<String, Integer> capDistMap,
             HashMap<String, String> stateNameMap,
-            HashMap<String, List<String>> bordersMap) {
+            HashMap<String, List<String>> bordersMap,
+            HashMap<String, String> reverseStateMap) {
 
         System.out.println("BuildGraph function entered");
 
@@ -46,16 +48,18 @@ public class Graph {
                     HashMap<String, Integer> innerHashMap = new HashMap<String, Integer>();
                     // System.out.println( "bordering country name: " + borderingCountry);
                     // get country code for bordering country string
-                    String borderingCountryCode = stateNameMap.get(borderingCountry);
+                    //System.out.println("bordering country: " + borderingCountry);
+                    String borderingCountryCode = reverseStateMap.get(borderingCountry);
                     // add each bordering country to the inner hashmap
                     // get distance
+                  //  System.out.println(country + "_" + borderingCountryCode);
                     Integer distance = capDistMap.get(country + "_" + borderingCountryCode);
-                    System.out.println(distance);
+                    //System.out.println(distance);
                     innerHashMap.put(borderingCountry, distance);
                     // System.out.println("country " + country + " bordering country " + borderingCountryCode);
                     // put inner hashmap into the graph
                     graph.put(country, innerHashMap);
-                    //  System.out.println(country + ": " + innerHashMap);
+                      System.out.println(country + ": " + innerHashMap);
                 }
             }
 

@@ -7,9 +7,9 @@ import java.util.List;
 public class readFiles {
 	// constructor
 	public readFiles(HashMap<String, String> stateNameMap, HashMap<String, Integer> capDistMap,
-			HashMap<String, List<String>> bordersMap) {
+			HashMap<String, List<String>> bordersMap, HashMap<String, String> reverseStateMap) {
 		// read in state names and make keys
-		readStateName(stateNameMap);
+		readStateName(stateNameMap, reverseStateMap);
 		// use previously made map to filter out invalid countries
 		readCapDist(capDistMap, stateNameMap);
 		// use previously made map to filter out invalid countries
@@ -17,7 +17,7 @@ public class readFiles {
 	}
 
 	// read state_name
-	public void readStateName(HashMap<String, String> mapName) {
+	public void readStateName(HashMap<String, String> mapName, HashMap<String, String> reverseStateMap) {
 		System.out.println("Starting readStateName...");
 		// read files using buffered reader
 		try {
@@ -50,6 +50,7 @@ public class readFiles {
 				if (value.equals("2020-12-31\n")) {
 					// add to hashmap
 					mapName.put(c1, c2);
+					reverseStateMap.put(c2, c1);
 				}
 			}
 			reader2.close();
