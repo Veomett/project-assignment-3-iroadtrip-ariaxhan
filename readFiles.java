@@ -7,14 +7,61 @@ import java.util.List;
 public class readFiles {
 	// constructor
 	public readFiles(HashMap<String, String> stateNameMap, HashMap<String, Integer> capDistMap,
-			HashMap<String, List<String>> bordersMap, HashMap<String, String> reverseStateMap) {
+			HashMap<String, List<String>> bordersMap, HashMap<String, String> reverseStateMap,
+			HashMap<String, String> edgeCases) {
 		// read in state names and make keys
 		readStateName(stateNameMap, reverseStateMap);
 		// use previously made map to filter out invalid countries
 		readCapDist(capDistMap, stateNameMap);
 		// use previously made map to filter out invalid countries
 		readBorders(bordersMap, capDistMap);
+		// read in edge cases
+		readEdgeCases(edgeCases);
 	}
+	
+	    // method to check if a country is an edge case
+		public void readEdgeCases(HashMap<String, String> edgeCases) {
+		try {
+        // check to see if it is an edge case
+        // read in edge cases file
+        // make reader
+        BufferedReader bufReader = new BufferedReader(new FileReader("edgecases.tsv"));
+        // make string and string array to hold values
+        String strCurrentLine;
+        String[] currentValues;
+        // loop through file and set each line as the current line
+		while ((strCurrentLine = bufReader.readLine()) != null) {
+			// split current line based on tab
+			currentValues = strCurrentLine.split("\t");
+			// place each part of the line in the appropriate place
+			String code = "";
+			String stringBorders = "";
+			String stringState = "";
+			// loop through values to check if it is an edge case
+			for (int p = 0; p < currentValues.length; p++) {
+				System.out.println("current value at " + p + "is: " + currentValues[p]);
+				// get 0, which is the country code
+				if (p == 0) {
+					code = currentValues[p];
+				} else if (p == 1) {
+					stringState = currentValues[p];
+				} else if (p == 2) {
+					stringBorders = currentValues[p];
+				} else {
+					continue;
+				}
+			}
+			// put in edge cases hashmap
+			edgeCases.put(code, stringState + "_" + stringBorders);
+			//System.out.println();
+
+		}
+		bufReader.close();
+	} catch (Exception e) {
+		System.out.println("Error in reading edge cases : " + e);
+	}
+    }
+
 
 	// read state_name
 	public void readStateName(HashMap<String, String> mapName, HashMap<String, String> reverseStateMap) {

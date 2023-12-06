@@ -52,14 +52,14 @@ public class Graph {
                     String borderingCountryCode = reverseStateMap.get(borderingCountry);
                     // add each bordering country to the inner hashmap
                     // get distance
-                  //  System.out.println(country + "_" + borderingCountryCode);
+                    //  System.out.println(country + "_" + borderingCountryCode);
                     Integer distance = capDistMap.get(country + "_" + borderingCountryCode);
                     //System.out.println(distance);
                     innerHashMap.put(borderingCountry, distance);
                     // System.out.println("country " + country + " bordering country " + borderingCountryCode);
                     // put inner hashmap into the graph
                     graph.put(country, innerHashMap);
-                      System.out.println(country + ": " + innerHashMap);
+                   // System.out.println(country + ": " + innerHashMap);
                 }
             }
 
@@ -123,58 +123,23 @@ public class Graph {
         }
 
     }
-}
-        
-        /* 
-    public void checkEdgeCase(String countryString) {
-        // check to see if it is an edge case
-        // read in edge cases file
-        // make reader
-        BufferedReader bufReader = new BufferedReader(new FileReader("edgecases.tsv"));
-        // make string and string array to hold values
-        String strCurrentLine;
-        String[] currentValues;
-        // loop through file and set each line as the current line
-        while ((strCurrentLine = bufReader.readLine()) != null) {
-            // split current line based on tab
-            currentValues = strCurrentLine.split("\t");
-            // place each part of the line in the appropriate place
-            String code = "";
-            String stringBorders = "";
-            String stringState = "";
-            // loop through values to check if it is an edge case
-            for (int p = 0; p < currentValues.length; p++) {
-                // get 0, which is the country code
-                if (p == 0) {
-                    code = currentValues[p];
-                } else if (p == 1) {
-                    stringState = currentValues[p];
-                } else if (p == 3) {
-                    stringBorders = currentValues[p];
-                } else {
-                    continue;
-                }
-            }
-            // compare countryString to the stringBorders string
 
-            if (countryString.equals(stringState)) {
-                // if they are equal, get the list of bordering countries
-                // split the stringBorders string on commas
-                String[] borderingCountriesArray = stringBorders.split(",");
-                // add each bordering country to the list of bordering countries
-                for (int i = 0; i < borderingCountriesArray.length; i++) {
-                    borderingCountries.add(borderingCountriesArray[i]);
-                }
-            } else {
-                System.out.println("No bordering countries for " + countryString);
-                continue;
-            }
-        }
+    // public void compareCountryString(String countryString, ) {
+    //         // compare countryString to the stringBorders string
+    //         if (countryString.equals(stringState)) {
+    //             // if they are equal, get the list of bordering countries
+    //             // split the stringBorders string on commas
+    //             String[] borderingCountriesArray = stringBorders.split(",");
+    //             // add each bordering country to the list of bordering countries
+    //             for (int i = 0; i < borderingCountriesArray.length; i++) {
+    //                 borderingCountries.add(borderingCountriesArray[i]);
+    //             }
+    //         } else {
+    //             System.out.println("No bordering countries for " + countryString);
+    //             continue;
+    //         }
+    //     }
     }
 
-*/
 
 
-
-
-    

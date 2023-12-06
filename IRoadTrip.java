@@ -13,7 +13,7 @@ public class IRoadTrip {
   HashMap<String, Integer> capDistMap = new HashMap<String, Integer>();
   HashMap<String, List<String>> bordersMap = new HashMap<String, List<String>>();
   HashMap<String, String> reverseStateMap = new HashMap<String, String>();
-
+  HashMap<String, String> edgeCases = new HashMap<String, String>();
   /*
    * Constructor
    * @param args command line arguments
@@ -32,13 +32,14 @@ public class IRoadTrip {
       if (state_name.equals("state_name.tsv") && capdist.equals("capdist.csv") && borders.equals("borders.txt") ) {
        System.out.println("Filenames validated, starting reading...");
         // create object to read files
-        readFiles files = new readFiles(stateNameMap, capDistMap, bordersMap, reverseStateMap);
+        readFiles files = new readFiles(stateNameMap, capDistMap, bordersMap, reverseStateMap, edgeCases);
          System.out.println("Files read, printing...");
          // Printing elements in object of Map
     //    System.out.println("reverse State Map " + reverseStateMap + "\n");
     //   System.out.println("State Map " + stateNameMap);
        // System.out.println("Cap Dist Map " + capDistMap);
-      //  System.out.println(bordersMap);
+       //  System.out.println(bordersMap);
+      System.out.println("Printing edge cases..." + edgeCases);
       } else {
         System.out.println("Invalid file names");
         System.out.println("state_name: " + state_name);
@@ -144,7 +145,7 @@ public class IRoadTrip {
     HashMap<String, Integer> capDistMap = roadTrip.capDistMap;
     HashMap<String, String> stateNameMap = roadTrip.stateNameMap;
     HashMap<String, List<String>> bordersMap = roadTrip.bordersMap;
-    HashMap<String, String> reverseStateMap = roadTrip.reverseStateMap;
+    HashMap<String, String> reverseStateMap = roadTrip.reverseStateMap;HashMap<String, String> edgeCases = new HashMap<String, String>();
    // roadTrip.getDistance("Spain", "France");
     //roadTrip.acceptUserInput();
     System.out.println("Starting graph...");
