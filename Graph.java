@@ -1,5 +1,4 @@
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -165,21 +164,25 @@ public class Graph {
     public List<String> dijkstra(String source, String destination) {
         System.out.println("Dijkstra function entered");
         Map<String, Integer> distances = new HashMap<>();
+        Map<String, String> predecessors = new HashMap<>(); // Map to store predecessors
         // make a list to store the visited countries
-        List<String> visited = new LinkedList<>();
+        // List<String> visited = new LinkedList<>();
         // create priority queue to store countries
         PriorityQueue<Map.Entry<String, Integer>> pq = new PriorityQueue<>((a, b) -> a.getValue() - b.getValue());
         // put all of the countries in the graph into the queue, initializing all at
         // infinity
-        System.out.println("priority queue: " + pq);
-        // first put source with value 0
-        distances.put(source, 0);
-        pq.offer(new HashMap.SimpleEntry<>(source, distances.get(source)));
+        // System.out.println("priority queue: " + pq);
+
         for (String country : graph.keySet()) {
             distances.put(country, INFINITY);
             // add to priority queue
             pq.offer(new HashMap.SimpleEntry<>(country, distances.get(country)));
         }
+
+        // Set distance for source after initializing others
+        distances.put(source, 0);
+        pq.offer(new HashMap.SimpleEntry<>(source, 0));
+
         System.out.println("updated priority queue: " + pq);
         // loop to the end of the queue
         while (!pq.isEmpty()) {
@@ -191,54 +194,57 @@ public class Graph {
             if (currentDistance == INFINITY)
                 continue;
             // stop when the destination is reached
+            // System.out.println("current country full test " + currentCountry);
+            // System.out.println("destination full test " + destination);
             if (currentCountry.equals(destination))
                 break;
             // for each neighbor, update cost (cost to get to current) + cumilative distance
-            System.out.println("current country: " + currentCountry);
+            // System.out.println("current country: " + currentCountry);
             // get code of current country
             String currentCountryCode = reverseStateMap.get(currentCountry);
-            System.out.println("current country code: " + currentCountryCode);
+            // System.out.println("current country code: " + currentCountryCode);
             if (graph.get(currentCountryCode) == null) {
                 break;
             }
             // loop through neighbors
-            for (String neighbor : graph.get(currentCountryCode).keySet()) {
-                System.out.println("neighbor " + neighbor);
-                // convert neighbor to code
-                String neighborCode = reverseStateMap.get(neighbor);
-                // get the distance between the two countries
-                int distance = returnGraphDist(currentCountry, neighbor);
-                System.out.println("distance: " + distance);
-                // total distance + distance between the two specific entries
-                int newDistance = currentDistance + distance;
-                System.out.println("new distance: " + newDistance);
-                int PrevDistance = distances.get(neighborCode);
-                // if the new distance is less than the prev distance, update it
-                if (newDistance < PrevDistance) {
-                    distances.put(neighbor, newDistance);
-                    String returnString = currentCountry + " --> " + neighbor + " (" + newDistance + " km.)";
-                    System.out.println("return string: " + returnString);
-                    visited.add(returnString);
-                    
-                    pq.offer(new HashMap.SimpleEntry<>(neighbor, newDistance));
+            if (graph.get(currentCountryCode) != null) {
+                for (String neighbor : graph.get(currentCountryCode).keySet()) {
+                    // System.out.println("neighbor " + neighbor);
+                    // convert neighbor to code
+                    String neighborCode = reverseStateMap.get(neighbor);
+                    // get the distance between the two countries
+                    int distance = returnGraphDist(currentCountry, neighbor);
+                    // System.out.println("distance: " + distance);
+                    // total distance + distance between the two specific entries
+                    int newDistance = currentDistance + distance;
+                    // System.out.println("new distance: " + newDistance);
+                    if (neighborCode != null && distances.containsKey(neighborCode)) {
+                        int PrevDistance = distances.get(neighborCode);
+                        // if the new distance is less than the prev distance, update it
+                        if (distances.containsKey(neighborCode) && newDistance < distances.get(neighborCode)) {
+                            distances.put(neighbor, newDistance);
+                            predecessors.put(neighborCode, currentCountryCode);
+                            pq.offer(new HashMap.SimpleEntry<>(neighbor, newDistance));
+                        }
+                    }
                 }
             }
         }
-        Collections.reverse(visited);
-        return visited;
-        // return the path
+        return reconstructPath(predecessors, source, destination);
     }
 
     // Method to reconstruct the shortest path from source to destination
     // aka go backwards
     private List<String> reconstructPath(Map<String, String> predecessors, String source, String destination) {
+        System.out.println("reconstructPath function entered");
         // list to store the path
         LinkedList<String> path = new LinkedList<>();
         // string to store each step in the path
         String step = destination;
-        System.out.println("step: " + step);
+        // System.out.println("step: " + step);
 
         // Check if a path exists
+        System.out.println("predecessors: " + predecessors);
         if (predecessors.get(step) == null) {
             return path; // empty list if no path is found
         }
