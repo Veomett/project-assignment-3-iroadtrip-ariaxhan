@@ -1,4 +1,5 @@
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -18,6 +19,7 @@ public class Graph {
     HashMap<String, String> edgeCasesbyString = new HashMap<String, String>();
     // full graph, with a country name (code) as the key and a hashmap of adjacent
     HashMap<String, HashMap<String, Integer>> graph = new HashMap<String, HashMap<String, Integer>>();
+
     // constructor, taking in maps as input
     public Graph(HashMap<String, Integer> capDistMap,
             HashMap<String, String> stateNameMap,
@@ -34,6 +36,7 @@ public class Graph {
         this.edgeCases = edgeCases;
         this.edgeCasesbyString = edgeCasesbyString;
     }
+
     // function to return the distance between two countries
     public int returnGraphDist(String country1, String country2) {
         // initialize distance
@@ -50,6 +53,7 @@ public class Graph {
         }
         return distance;
     }
+
     // function to build the graph
     // method to build the graph from data (hashmaps)
     public void buildGraph() {
@@ -72,10 +76,10 @@ public class Graph {
                 // if it is an edge case
                 if (countryasBorderString != null) {
                     borderingCountries = bordersMap.get(countryasBorderString);
-                     System.out.println("edge case: " + countryasBorderString);
+                    // System.out.println("edge case: " + countryasBorderString);
                 } else {
                     // the country is not an edge case nor a valid country
-                    System.err.println(countryString + " is not a valid country");
+                    // System.err.println(countryString + " is not a valid country");
                 }
             }
             // check if bordering countries are still null, proceed if they are not
@@ -88,14 +92,15 @@ public class Graph {
                     if (innerHashMap == null) {
                         innerHashMap = new HashMap<String, Integer>();
                     }
-                   // get the country code for the current bordering country
+                    // get the country code for the current bordering country
                     String borderingCountryCode = reverseStateMap.get(borderingCountry);
-                  //  System.out.println("bordering country code: " + borderingCountryCode);
-                    
-                   // if it is null, check if it is an edge case
-                   if (borderingCountryCode == null) {
-                       System.out.println("potential bordering country string : " + borderingCountry);
-                       borderingCountryCode = checkEdgeCasebyString(borderingCountry, edgeCasesbyString);
+                    // System.out.println("bordering country code: " + borderingCountryCode);
+
+                    // if it is null, check if it is an edge case
+                    if (borderingCountryCode == null) {
+                        // System.out.println("potential bordering country string : " +
+                        // borderingCountry);
+                        borderingCountryCode = checkEdgeCasebyString(borderingCountry, edgeCasesbyString);
                     }
                     String key = country + "_" + borderingCountryCode;
                     Integer distance = capDistMap.get(key);
@@ -134,14 +139,14 @@ public class Graph {
 
     public String checkEdgeCasebyString(String countryString, HashMap<String, String> edgeCasesbyString) {
         // check if given country code is in edge cases
-        System.out.println("country string inputted in check edge case by string: " + countryString);
-
+        // System.out.println("country string inputted in check edge case by string: " +
+        // countryString);
         for (String string : edgeCasesbyString.keySet()) {
             if (string.equals(countryString)) {
-                            System.out.println("string in edge cases by string: " + string);
+                // System.out.println("string in edge cases by string: " + string);
                 // get the corresponding code
                 String code = edgeCasesbyString.get(string);
-                System.out.println(code);
+                // System.out.println(code);
                 // return the code
                 return code;
             }
@@ -158,23 +163,27 @@ public class Graph {
 
     // Dijkstra's algorithm to find the shortest path (polished by ChatGPT)
     public List<String> dijkstra(String source, String destination) {
+        System.out.println("Dijkstra function entered");
         Map<String, Integer> distances = new HashMap<>();
-        Map<String, String> predecessors = new HashMap<>();
+        // make a list to store the visited countries
+        List<String> visited = new LinkedList<>();
+        // create priority queue to store countries
         PriorityQueue<Map.Entry<String, Integer>> pq = new PriorityQueue<>((a, b) -> a.getValue() - b.getValue());
         // put all of the countries in the graph into the queue, initializing all at
         // infinity
+        System.out.println("priority queue: " + pq);
+        // first put source with value 0
+        distances.put(source, 0);
+        pq.offer(new HashMap.SimpleEntry<>(source, distances.get(source)));
         for (String country : graph.keySet()) {
-            if (country.equals(source)) {
-                distances.put(country, 0);
-            } else {
-                distances.put(country, INFINITY);
-            }
+            distances.put(country, INFINITY);
             // add to priority queue
             pq.offer(new HashMap.SimpleEntry<>(country, distances.get(country)));
         }
+        System.out.println("updated priority queue: " + pq);
         // loop to the end of the queue
         while (!pq.isEmpty()) {
-            // get next country in the queue, which is the lowest cost unknown vertext
+            // get next country in the queue, which is the lowest cost unknown vertex
             String currentCountry = pq.poll().getKey();
             int currentDistance = distances.get(currentCountry);
             // set known, which is the removal from the queue in this case
@@ -185,21 +194,39 @@ public class Graph {
             if (currentCountry.equals(destination))
                 break;
             // for each neighbor, update cost (cost to get to current) + cumilative distance
-            for (Map.Entry<String, Integer> neighborEntry : graph.get(currentCountry).entrySet()) {
-                String neighbor = neighborEntry.getKey();
-                int edgeWeight = neighborEntry.getValue();
+            System.out.println("current country: " + currentCountry);
+            // get code of current country
+            String currentCountryCode = reverseStateMap.get(currentCountry);
+            System.out.println("current country code: " + currentCountryCode);
+            if (graph.get(currentCountryCode) == null) {
+                break;
+            }
+            // loop through neighbors
+            for (String neighbor : graph.get(currentCountryCode).keySet()) {
+                System.out.println("neighbor " + neighbor);
+                // convert neighbor to code
+                String neighborCode = reverseStateMap.get(neighbor);
+                // get the distance between the two countries
+                int distance = returnGraphDist(currentCountry, neighbor);
+                System.out.println("distance: " + distance);
                 // total distance + distance between the two specific entries
-                int newDistance = currentDistance + edgeWeight;
+                int newDistance = currentDistance + distance;
+                System.out.println("new distance: " + newDistance);
+                int PrevDistance = distances.get(neighborCode);
                 // if the new distance is less than the prev distance, update it
-                if (newDistance < distances.get(neighbor)) {
+                if (newDistance < PrevDistance) {
                     distances.put(neighbor, newDistance);
-                    predecessors.put(neighbor, currentCountry);
+                    String returnString = currentCountry + " --> " + neighbor + " (" + newDistance + " km.)";
+                    System.out.println("return string: " + returnString);
+                    visited.add(returnString);
+                    
                     pq.offer(new HashMap.SimpleEntry<>(neighbor, newDistance));
                 }
             }
         }
-
-        return reconstructPath(predecessors, source, destination);
+        Collections.reverse(visited);
+        return visited;
+        // return the path
     }
 
     // Method to reconstruct the shortest path from source to destination
@@ -209,6 +236,7 @@ public class Graph {
         LinkedList<String> path = new LinkedList<>();
         // string to store each step in the path
         String step = destination;
+        System.out.println("step: " + step);
 
         // Check if a path exists
         if (predecessors.get(step) == null) {

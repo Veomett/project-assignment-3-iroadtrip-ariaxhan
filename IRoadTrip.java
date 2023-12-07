@@ -44,13 +44,15 @@ public class IRoadTrip {
             edgeCases,
             edgeCasesbyString);
         System.out.println("Files read, printing...");
-        // Printing elements in object of Map
-        // System.out.println("reverse State Map " + reverseStateMap + "\n");
-        // System.out.println("State Map " + stateNameMap);
-        // System.out.println("Cap Dist Map " + capDistMap);
-        // System.out.println(bordersMap);
-
-        // System.out.println("Printing edge cases..." + edgeCases);
+        //
+        // print out hashmaps for testing
+        // System.out.println("stateNameMap: " + stateNameMap);
+        // System.out.println("capDistMap: " + capDistMap);
+        // System.out.println("bordersMap: " + bordersMap);
+        // System.out.println("reverseStateMap: " + reverseStateMap);
+        // System.out.println("edgeCases: " + edgeCases);
+        // System.out.println("edgeCasesbyString: " + edgeCasesbyString);
+        System.out.println("Printing complete...");
       } else {
         System.out.println("Invalid file names");
         System.out.println("state_name: " + state_name);
@@ -107,17 +109,13 @@ public class IRoadTrip {
   public List<String> findPath(String country1, String country2, Graph graph) {
     // create empty list to return
     List<String> path = new ArrayList<String>();
-    // use bfs to find path if edge paths are all the same
-    // if edge paths are not the same, use dijkstra's algorithm
     // set up a table and use directed, weighted graph
-
-    // list to store path
-    // System.out.println(country1 + country2 + graph);
+    System.out.println(country1 + country2 + graph);
     path = graph.dijkstra(country1, country2);
-    for (String s : path) {
-      System.out.println(s);
-    }
+   // for (String s : path) {
+      // int distance = roadTrip.getDistance(s, country2, graph);
 
+   // }
     return path;
   }
 
@@ -191,9 +189,11 @@ public class IRoadTrip {
     String[] countries = inputCountries.split("_");
     String country1 = countries[0];
     String country2 = countries[1];
-    int distance = roadTrip.getDistance(country1, country2, graph);
-    System.out.println("This distance between " + country1 + " and " + country2 + " is " + distance + " km");
-    roadTrip.findPath("", "France", graph);
-    System.out.println("Path found...");
+
+    List<String> path = roadTrip.findPath(country1, country2, graph);
+    // print path
+    for (String s : path) {
+      System.out.println(s);
+    }
   }
 }
