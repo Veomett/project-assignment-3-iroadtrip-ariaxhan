@@ -1,4 +1,5 @@
 
+import java.util.AbstractMap;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -18,6 +19,7 @@ public class Graph {
     HashMap<String, String> edgeCasesbyString = new HashMap<String, String>();
     // full graph, with a country name (code) as the key and a hashmap of adjacent
     HashMap<String, HashMap<String, Integer>> graph = new HashMap<String, HashMap<String, Integer>>();
+    Set<String> keys;
 
     // constructor, taking in maps as input
     public Graph(HashMap<String, Integer> capDistMap,
@@ -28,6 +30,7 @@ public class Graph {
             HashMap<String, String> edgeCasesbyString) {
         // countries and their distances as the value
         this.graph = new HashMap<String, HashMap<String, Integer>>();
+        this.keys = this.graph.keySet();
         this.capDistMap = capDistMap;
         this.stateNameMap = stateNameMap;
         this.bordersMap = bordersMap;
@@ -160,22 +163,6 @@ public class Graph {
         }
     }
 
-    // Function to get the adjacency list for a given country
-    public HashMap<String, Integer> getItem(String country) {
-        HashMap<String, Integer> item = this.graph.get(country);
-        if (item != null) {
-            System.out.println(country + ": " + item);
-        } else {
-            System.out.println(country + " not found in graph.");
-        }
-        return item;
-    }
-
-    // Function to get all country codes in the graph
-    public Set<String> getKeySet() {
-        return this.graph.keySet();
-    }
-
     // Dijkstra's algorithm to find the shortest path (polished by ChatGPT)
     public List<String> dijkstra(String source, String destination, Graph graph) {
         System.out.println("Dijkstra function entered");
@@ -188,83 +175,56 @@ public class Graph {
         // make a list to store the visited countries
         // List<String> visited = new LinkedList<>();
         // create priority queue to store countries
-        PriorityQueue<Map.Entry<String, Integer>> pq = new PriorityQueue<>((a, b) -> a.getValue() - b.getValue());
+        PriorityQueue<Map.Entry<String, Integer>> pq = new PriorityQueue<>(Map.Entry.comparingByValue());
         // put all of the countries in the graph into the queue, initializing all at
         // infinity
         // System.out.println("priority queue: " + pq);
 
-        for (String country : graph.getKeySet()) {
-            distances.put(country, INFINITY);
-        }
-
+        graph.keys.forEach(country -> distances.put(country, INFINITY));
         System.out.println("distances: " + distances);
-
-        // Set distance for source after initializing others
-        source = reverseStateMap.get(source);
-        distances.put(source, 0);
-        pq.offer(new HashMap.SimpleEntry<>(source, 0));
-
+        System.out.println("key set: " + graph.keys);
+        distances.put(sourceCode, 0);
+        pq.offer(new AbstractMap.SimpleEntry<>(sourceCode, 0));
         System.out.println("updated priority queue: " + pq);
         // loop to the end of the queue
         while (!pq.isEmpty()) {
             String currentCountryCode = pq.poll().getKey();
-            int currentDistance = distances.get(currentCountryCode);
-            String currentCountry = stateNameMap.get(currentCountryCode);
-
-            System.out.println("current country: " + currentCountryCode + " with distance " + currentDistance);
-
-            if (currentCountry.equals(destination)) {
+            System.out.println("Processing country: " + currentCountryCode);
+            String current = pq.poll().getKey();
+            if (currentCountryCode.equals(destination)) {
+                System.out.println("Destination reached");
                 break;
             }
-            System.out.println(graph.getItem(currentCountryCode));
-            if (graph.getItem(currentCountryCode) != null) {
-                for (String neighbor : graph.getItem(currentCountryCode).keySet()) {
-                    String neighborCode = reverseStateMap.get(neighbor);
-                    int distance = returnGraphDist(currentCountry, neighbor);
-                    int newDistance = currentDistance + distance;
 
-                    System.out.println("neighbor " + neighbor + ": " + neighborCode + " with distance " + distance);
-                    if (newDistance < distances.get(neighborCode)) {
-                        distances.put(neighbor, newDistance);
-                        predecessors.put(neighborCode, currentCountryCode);
-                        pq.offer(new HashMap.SimpleEntry<>(neighbor, newDistance));
-                    }
+            int currentDistance = distances.get(current);
+            this.graph.getOrDefault(current, new HashMap<>()).forEach((neighbor, distance) -> {
+                int newDistance = currentDistance + distance;
+                if (newDistance < distances.get(neighbor)) {
+                    distances.put(neighbor, newDistance);
+                    predecessors.put(neighbor, current);
+                    pq.offer(new AbstractMap.SimpleEntry<>(neighbor, newDistance));
                 }
-            }
+            });
         }
 
-        if (pq.isEmpty()) {
-            System.out.println("Path not found!");
-            return new LinkedList<String>();
-        }
-
-        var list = reconstructPath(predecessors, source, destination);
-
-        System.out.println("Printing path...");
-        for (String str : list) {
-            System.out.println(str);
-        }
-
-        return list;
+        return reconstructPath(predecessors, sourceCode, destinationCode);
     }
 
     // Method to reconstruct the shortest path from source to destination
     // aka go backwards
     private List<String> reconstructPath(Map<String, String> predecessors, String source, String destination) {
-        System.out.println("reconstructPath function entered");
-
-        // list to store the path
         LinkedList<String> path = new LinkedList<>();
+        String step = destination;
 
-        // string to store each step in the path
-        String step = reverseStateMap.get(destination);
-        path.add(step);
-        while (!step.equals(reverseStateMap.get(source))) {
+        while (!step.equals(source) && predecessors.containsKey(step)) {
+            path.addFirst(stateNameMap.get(step)); // Convert code back to name
             step = predecessors.get(step);
-            path.addFirst(step); // add at the beginning
         }
 
-        System.out.println("path: " + path);
+        if (!path.isEmpty()) {
+            path.addFirst(stateNameMap.get(source)); // Convert source code back to name
+        }
+
         return path;
     }
 }
