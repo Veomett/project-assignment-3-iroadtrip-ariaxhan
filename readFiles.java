@@ -7,66 +7,67 @@ import java.util.List;
 public class readFiles {
 	// constructor
 	public readFiles(
-		HashMap<String, String> stateNameMap,
-	HashMap<String, Integer> capDistMap,
+			HashMap<String, String> stateNameMap,
+			HashMap<String, Integer> capDistMap,
 			HashMap<String, List<String>> bordersMap,
 			HashMap<String, String> reverseStateMap,
 			HashMap<String, String> edgeCases,
 			HashMap<String, String> edgeCasesbyString) {
+		// use previously made map to filter out invalid countries
+		// read in edge cases
+		readEdgeCases(edgeCases, edgeCasesbyString);
 		// read in state names and make keys
 		readStateName(stateNameMap, reverseStateMap);
 		// use previously made map to filter out invalid countries
-		readCapDist(capDistMap, stateNameMap);
-		// use previously made map to filter out invalid countries
-		readBorders(bordersMap, capDistMap);
-		// read in edge cases
-		readEdgeCases(edgeCases, edgeCasesbyString);
+		readBorders(bordersMap, reverseStateMap, edgeCasesbyString);
+
+		readCapDist(capDistMap, bordersMap, stateNameMap);
+
 	}
-	
-	    // method to check if a country is an edge case
-		public void readEdgeCases(HashMap<String, String> edgeCases, HashMap<String, String> edgeCasesbyString) {
+
+	// method to check if a country is an edge case
+	public void readEdgeCases(HashMap<String, String> edgeCases, HashMap<String, String> edgeCasesbyString) {
 		try {
-        // check to see if it is an edge case
-        // read in edge cases file
-        // make reader
-        BufferedReader bufReader = new BufferedReader(new FileReader("edgecases.tsv"));
-        // make string and string array to hold values
-        String strCurrentLine;
-        String[] currentValues;
-        // loop through file and set each line as the current line
-		while ((strCurrentLine = bufReader.readLine()) != null) {
-			// split current line based on tab
-			currentValues = strCurrentLine.split("\t");
-			// place each part of the line in the appropriate place
-			String code = "";
-			String stringBorders = "";
-			String stringState = "";
-			// loop through values to check if it is an edge case
-			for (int p = 0; p < currentValues.length; p++) {
-			//	System.out.println("current value at " + p + "is: " + currentValues[p]);
-				// get 0, which is the country code
-				if (p == 0) {
-					code = currentValues[p];
-				} else if (p == 1) {
-					stringState = currentValues[p];
-				} else if (p == 2) {
-					stringBorders = currentValues[p];
-				} else {
-					continue;
+			// check to see if it is an edge case
+			// read in edge cases file
+			// make reader
+			BufferedReader bufReader = new BufferedReader(new FileReader("edgecases.tsv"));
+			// make string and string array to hold values
+			String strCurrentLine;
+			String[] currentValues;
+			// loop through file and set each line as the current line
+			while ((strCurrentLine = bufReader.readLine()) != null) {
+				// split current line based on tab
+				currentValues = strCurrentLine.split("\t");
+				// place each part of the line in the appropriate place
+				String code = "";
+				String stringBorders = "";
+				String stringState = "";
+				// loop through values to check if it is an edge case
+				for (int p = 0; p < currentValues.length; p++) {
+					// System.out.println("current value at " + p + "is: " + currentValues[p]);
+					// get 0, which is the country code
+					if (p == 0) {
+						code = currentValues[p];
+					} else if (p == 1) {
+						stringState = currentValues[p];
+					} else if (p == 2) {
+						stringBorders = currentValues[p];
+					} else {
+						continue;
+					}
 				}
+				// put in edge cases hashmap
+				edgeCases.put(code, stringState + "_" + stringBorders);
+				edgeCasesbyString.put(stringState, code);
+				// System.out.println();
+
 			}
-			// put in edge cases hashmap
-			edgeCases.put(code, stringState + "_" + stringBorders);
-			edgeCasesbyString.put(stringState, code);
-			//System.out.println();
-
+			bufReader.close();
+		} catch (Exception e) {
+			System.out.println("Error in reading edge cases : " + e);
 		}
-		bufReader.close();
-	} catch (Exception e) {
-		System.out.println("Error in reading edge cases : " + e);
 	}
-    }
-
 
 	// read state_name
 	public void readStateName(HashMap<String, String> mapName, HashMap<String, String> reverseStateMap) {
@@ -109,10 +110,12 @@ public class readFiles {
 		} catch (Exception e) {
 			System.out.println("Error in readFile: " + e);
 		}
+
+		System.out.println(reverseStateMap);
 	}
 
 	// read capdist
-	public void readCapDist(HashMap<String, Integer> mapName, HashMap<String, String> stateNameMap) {
+	public void readCapDist(HashMap<String, Integer> mapName, HashMap<String, List<String>> bordersMap, HashMap<String, String> stateNameMap) {
 		System.out.println("Starting readCapDist...");
 		// read files using buffered reader
 		try {
@@ -142,19 +145,49 @@ public class readFiles {
 						continue;
 					}
 				}
+			
 				// compare against stateNameMap to make sure the country still exists
 				// split key again to get the two countries
-
-				mapName.put(key, value);
+				// check against borders to make sure the countries border each other
+				String[] countries = key.split("_");
+				String country1 = countries[0];
+				String country2Original = countries[1]; // Save the original country2
+				if (stateNameMap.get(country1) != null && stateNameMap.get(country2Original) != null) {
+					System.out.println("country1: " + country1);
+					System.out.println("country2: " + country2Original);
+				
+				List<String> internalMap = bordersMap.get(country1);
+				System.out.println("internal map " + internalMap);
+				//System.out.println(country1 + " " + country2);
+				if (internalMap != null) {
+					for (int r = 0; r < internalMap.size(); r++) {
+						String countryname = internalMap.get(r);
+						//	System.out.println(countryname);
+						// convert countryname to string 
+						String country2Converted = stateNameMap.get(country2Original);
+						// convert countryname to code
+						//	System.out.println(countryname + " == " + country2);
+						//countryname = reverseStateMap.get(countryname);
+						if (countryname.equals(country2Converted)) {
+							String newKey = country1 + "_" + country2Original;
+							if (!mapName.containsKey(newKey)) { // Check if the key is already present
+								mapName.put(newKey, value);
+							}
+						}
+					}
+				}
+				}
 			}
 			reader1.close();
 		} catch (Exception e) {
 			System.out.println("Error in readFile: " + e);
 		}
+		System.out.println(mapName);
 	}
 
 	// read borders
-	public void readBorders(HashMap<String, List<String>>mapName,HashMap<String, Integer> capDistMap) {
+	public void readBorders(HashMap<String, List<String>> mapName, HashMap<String, String> reverseStateMap,
+			HashMap<String, String> edgeCasesbyString) {
 		System.out.println("Starting readBorders...");
 		// read files using buffered reader
 		try {
@@ -162,7 +195,7 @@ public class readFiles {
 			// read each line, split by '='
 			String strCurrentLine;
 			while ((strCurrentLine = reader3.readLine()) != null) {
-				// split line 
+				// split line
 				String[] fullLine = strCurrentLine.split("=");
 				if (fullLine.length < 2) {
 					System.out.println("Invalid line format: " + strCurrentLine);
@@ -187,7 +220,16 @@ public class readFiles {
 				// put main country and list of its bordering countries into the hashmap
 				// make sure to exclude islands
 				if (borderCountries.size() > 0) {
-
+					if (reverseStateMap.get(countryName) == null) {
+						// check if its an edge case
+						String code = edgeCasesbyString.get(countryName);
+						if (code != null) {
+							countryName = code;
+						} else {
+							continue;
+						}
+					}
+					countryName = reverseStateMap.get(countryName);
 					mapName.put(countryName, borderCountries);
 
 				}
@@ -197,5 +239,6 @@ public class readFiles {
 		} catch (Exception e) {
 			System.out.println("Error in readFile: " + e);
 		}
+		System.out.println(mapName);
 	}
 }

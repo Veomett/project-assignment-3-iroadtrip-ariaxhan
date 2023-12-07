@@ -111,11 +111,11 @@ public class IRoadTrip {
     List<String> path = new ArrayList<String>();
     // set up a table and use directed, weighted graph
     System.out.println(country1 + country2 + graph);
-    path = graph.dijkstra(country1, country2);
-   // for (String s : path) {
-      // int distance = roadTrip.getDistance(s, country2, graph);
+    path = graph.dijkstra(country1, country2, graph);
+    // for (String s : path) {
+    // int distance = roadTrip.getDistance(s, country2, graph);
 
-   // }
+    // }
     return path;
   }
 
@@ -178,11 +178,14 @@ public class IRoadTrip {
     HashMap<String, String> reverseStateMap = roadTrip.reverseStateMap;
     HashMap<String, String> edgeCases = roadTrip.edgeCases;
     HashMap<String, String> edgeCasesbyString = roadTrip.edgeCasesbyString;
+
     System.out.println("Starting graph...");
+    // build graph object
     Graph graph = new Graph(capDistMap, stateNameMap, bordersMap, reverseStateMap, edgeCases, edgeCasesbyString);
     System.out.println("Graph object made..");
+    // build graph
     graph.buildGraph();
-     graph.printGraph();
+    // graph.printGraph();
     System.out.println("Graph built...");
     String inputCountries = roadTrip.acceptUserInput();
     // string split to get input countries

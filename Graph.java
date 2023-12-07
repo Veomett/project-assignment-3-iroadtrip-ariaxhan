@@ -156,13 +156,32 @@ public class Graph {
 
     public void printGraph() {
         for (String country : graph.keySet()) {
-            System.out.println(country + ": " + graph.get(country));
+            System.out.println(country + ": " + this.graph.get(country));
         }
     }
 
+    // Function to get the adjacency list for a given country
+    public HashMap<String, Integer> getItem(String country) {
+        HashMap<String, Integer> item = this.graph.get(country);
+        if (item != null) {
+            System.out.println(country + ": " + item);
+        } else {
+            System.out.println(country + " not found in graph.");
+        }
+        return item;
+    }
+
+    // Function to get all country codes in the graph
+    public Set<String> getKeySet() {
+        return this.graph.keySet();
+    }
+
     // Dijkstra's algorithm to find the shortest path (polished by ChatGPT)
-    public List<String> dijkstra(String source, String destination) {
+    public List<String> dijkstra(String source, String destination, Graph graph) {
         System.out.println("Dijkstra function entered");
+        String sourceCode = reverseStateMap.get(source);
+        String destinationCode = reverseStateMap.get(destination);
+
         Map<String, Integer> distances = new HashMap<>();
         Map<String, String> predecessors = new HashMap<>(); // Map to store predecessors
 
@@ -174,80 +193,77 @@ public class Graph {
         // infinity
         // System.out.println("priority queue: " + pq);
 
-        for (String country : graph.keySet()) {
+        for (String country : graph.getKeySet()) {
             distances.put(country, INFINITY);
-            // add to priority queue
-            pq.offer(new HashMap.SimpleEntry<>(country, distances.get(country)));
         }
 
+        System.out.println("distances: " + distances);
+
         // Set distance for source after initializing others
+        source = reverseStateMap.get(source);
         distances.put(source, 0);
         pq.offer(new HashMap.SimpleEntry<>(source, 0));
 
         System.out.println("updated priority queue: " + pq);
         // loop to the end of the queue
         while (!pq.isEmpty()) {
-            String currentCountry = pq.poll().getKey();
-            int currentDistance = distances.get(currentCountry);
+            String currentCountryCode = pq.poll().getKey();
+            int currentDistance = distances.get(currentCountryCode);
+            String currentCountry = stateNameMap.get(currentCountryCode);
 
-            if (currentDistance == INFINITY) {
-                continue;
-            }
+            System.out.println("current country: " + currentCountryCode + " with distance " + currentDistance);
 
             if (currentCountry.equals(destination)) {
                 break;
             }
-
-            String currentCountryCode = reverseStateMap.get(currentCountry);
-            if (graph.get(currentCountryCode) != null) {
-                for (String neighbor : graph.get(currentCountryCode).keySet()) {
+            System.out.println(graph.getItem(currentCountryCode));
+            if (graph.getItem(currentCountryCode) != null) {
+                for (String neighbor : graph.getItem(currentCountryCode).keySet()) {
                     String neighborCode = reverseStateMap.get(neighbor);
                     int distance = returnGraphDist(currentCountry, neighbor);
                     int newDistance = currentDistance + distance;
 
-                    if (distances.containsKey(neighborCode) && newDistance < distances.get(neighborCode)) {
+                    System.out.println("neighbor " + neighbor + ": " + neighborCode + " with distance " + distance);
+                    if (newDistance < distances.get(neighborCode)) {
                         distances.put(neighbor, newDistance);
                         predecessors.put(neighborCode, currentCountryCode);
                         pq.offer(new HashMap.SimpleEntry<>(neighbor, newDistance));
                     }
                 }
             }
-
         }
-        return reconstructPath(predecessors, source, destination);
+
+        if (pq.isEmpty()) {
+            System.out.println("Path not found!");
+            return new LinkedList<String>();
+        }
+
+        var list = reconstructPath(predecessors, source, destination);
+
+        System.out.println("Printing path...");
+        for (String str : list) {
+            System.out.println(str);
+        }
+
+        return list;
     }
 
     // Method to reconstruct the shortest path from source to destination
     // aka go backwards
     private List<String> reconstructPath(Map<String, String> predecessors, String source, String destination) {
         System.out.println("reconstructPath function entered");
+
         // list to store the path
         LinkedList<String> path = new LinkedList<>();
-        // string to store each step in the path
-        String step = destination;
-        System.out.println("step: " + step);
-        // convert step to code
-        step = reverseStateMap.get(step);
-        // convert source to code
-        source = reverseStateMap.get(source);
 
-        // Check if a path exists
-        System.out.println("predecessors: " + predecessors);
-        System.out.println(predecessors.get(step));
-        if (predecessors.get(step) == null) {
-            return path; // empty list if no path is found
-        }
-        // if it does, add it
+        // string to store each step in the path
+        String step = reverseStateMap.get(destination);
         path.add(step);
-        while (predecessors.containsKey(step) && !step.equals(source)) {
+        while (!step.equals(reverseStateMap.get(source))) {
             step = predecessors.get(step);
             path.addFirst(step); // add at the beginning
         }
 
-        // Check if the source is reached
-        if (!path.getFirst().equals(source)) {
-            return new LinkedList<>(); // return an empty list if the source isn't reached
-        }
         System.out.println("path: " + path);
         return path;
     }
