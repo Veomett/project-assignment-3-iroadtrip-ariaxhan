@@ -1,4 +1,3 @@
-import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -9,8 +8,51 @@ import java.util.Scanner;
 import java.util.Set;
 
 public class IRoadTrip {
-  private final int INFINITY = Integer.MAX_VALUE;
 
+  /*
+   * node class for countries to be used in algorithm
+   * 
+   * @param countryCode: country code
+   * 
+   * @param distance: distance from source country
+   */
+  public class countryNode implements Comparable<countryNode> {
+    String countryCode;
+    int distance;
+
+    public countryNode(String countryCode, int distance) {
+      this.countryCode = countryCode;
+      this.distance = distance;
+    }
+
+    public int compareTo(countryNode a) {
+      return (distance - a.distance);
+    }
+
+  }
+
+  /*
+   * class variables
+   * 
+   * @param INFINITY: integer to represent infinity
+   * 
+   * @param country1: string of country 1
+   * 
+   * @param country2: string of country 2
+   * 
+   * @param stateNameMap: hashmap of country codes and country names
+   * 
+   * @param capDistMap: hashmap of country codes and distances between capitals
+   * 
+   * @param bordersMap: hashmap of country codes and list of bordering countries
+   * 
+   * @param reverseStateMap: hashmap of country names and country codes
+   * 
+   * @param edgeCases: hashmap of country codes and edge cases
+   * 
+   * @param edgeCasesbyString: hashmap of country names and country codes
+   */
+  private final int INFINITY = Integer.MAX_VALUE;
   String country1;
   String country2;
   HashMap<String, String> stateNameMap = new HashMap<String, String>();
@@ -52,9 +94,12 @@ public class IRoadTrip {
         System.out.println("state_name: " + state_name);
         System.out.println("capdist: " + capdist);
         System.out.println("borders: " + borders);
+        System.exit(0);
       }
     } catch (Exception e) {
       System.out.println("Error in IRoadTrip: " + e);
+      // exit program
+      System.exit(0);
     }
   }
 
@@ -73,14 +118,6 @@ public class IRoadTrip {
     try {
       distance = graph.returnGraphDist(country1, country2);
       // get distance from main graph
-
-      /*
-       * use country codes to get distance
-       * distance = capDistMap.get((String) country1Code + "_" + (String)
-       * country2Code);
-       * System.out.println(distance);
-       * System.out.println("distance: " + distance);
-       */
       return distance;
     } catch (Exception e) {
       System.out.println("Error in getDistance: " + e);
@@ -103,82 +140,94 @@ public class IRoadTrip {
   public List<String> findPath(String country1, String country2, Graph graph) {
     // create empty list to return
     List<String> path = new ArrayList<String>();
-    // set up a table and use directed, weighted graph
-    System.out.println(country1 + country2 + graph);
-    graph.graphCountryKeys = new LinkedList<String>();
-    for (int a = 0; a < graph.graphCountryKeys.size(); a++) {
-      System.out.println("key set" + a);
-    }
-
-    System.out.println("Dijkstra function entered");
+    // get country codes from input
     String sourceCode = reverseStateMap.get(country1);
     String destinationCode = reverseStateMap.get(country2);
-
-    HashMap<String, Integer> distances = new HashMap<>();
+    // error handling
+    if (sourceCode == null || destinationCode == null) {
+      System.out.println("Country does not exist");
+      // return empty list
+      return path;
+    }
     HashMap<String, String> predecessors = new HashMap<>(); // Map to store predecessors
-
-    // make a list to store the visited countries
     // create priority queue to store countries
-    PriorityQueue<Map.Entry<String, Integer>> pq = new PriorityQueue<>(Map.Entry.comparingByValue());
-    // put all of the countries in the graph into the queue, initializing all at
-    // infinity
+    PriorityQueue<countryNode> pq = new PriorityQueue<>();
+    // put all countries in the graph into the queue, initializing all at infinity
     Set<String> keys = graph.graph.keySet();
-    System.out.println("keys" + keys);
-   // graphforEach(country -> distances.put(country, INFINITY));
-    System.out.println("distances: " + distances);
-    System.out.println("key set: " + graph.keys);
-    distances.put(sourceCode, 0);
+    // use keys to make comparable objects, adding to queue
+    for (String key : keys) {
+      countryNode country = new countryNode(key, INFINITY);
+      pq.offer(country);
+    }
+    // update source country
+    pq.offer(new countryNode(sourceCode, 0));
 
-    pq.offer(new AbstractMap.SimpleEntry<>(sourceCode, 0));
-    System.out.println("updated priority queue: " + pq);
     // loop to the end of the queue
     while (!pq.isEmpty()) {
-      Map.Entry<String, Integer> countryEntry = pq.poll();
-      // System.out.println("Processing country: " + currentCountryCode);
-      String countryCode = countryEntry.getKey();
-      int distance = countryEntry.getValue();
+      // get the country entry
+      countryNode fullCountryEntry = pq.poll();
+      // get country code
+      String countryEntry = fullCountryEntry.countryCode;
+      // get distance of entry
+      int curDist = fullCountryEntry.distance;
 
-      if (countryCode.equals(country2)) {
+      // convert country string to code
+      String toComp = reverseStateMap.get(country2);
+      // compare entry code to destination code
+      if (countryEntry.equals(toComp)) {
         System.out.println("Destination reached");
         break;
       }
+      // get the hashmap of neighbors
+      HashMap<String, Integer> neighbors = graph.graph.get(countryEntry);
 
-      int currentDistance = distances.get(countryCode);
-      graph.graph.getOrDefault(countryCode, new HashMap<>()).forEach((neighbor, current) -> {
-        System.out.println(neighbor);
-        int newDistance = currentDistance + distance;
-        if (newDistance < distances.get(neighbor)) {
-          distances.put(neighbor, newDistance);
-          // predecessors.put(neighbor, current);
-          pq.offer(new AbstractMap.SimpleEntry<>(neighbor, newDistance));
+      // loop through
+      for (Map.Entry<String, Integer> entry : neighbors.entrySet()) {
+        // update distances
+        if (entry.getKey() != null && entry.getValue() != null) {
+          // get neighbor name and distance
+          String neighName = entry.getKey();
+          int neighDist = entry.getValue();
+          // calculate new distance
+          int newDistance = curDist + neighDist;
+          // compare distances
+          if (newDistance < neighDist) {
+            // add to predecessors
+            predecessors.put(neighName, countryEntry);
+            // update distance in queue
+            pq.offer(new countryNode(neighName, newDistance));
+          }
         }
-      });
+      }
     }
-
+    // run function to retrace steps and find path
     return reconstructPath(predecessors, sourceCode, destinationCode);
   }
 
   // Method to reconstruct the shortest path from source to destination
   // aka go backwards
   private List<String> reconstructPath(Map<String, String> predecessors, String source, String destination) {
+    // create empty list to return
     LinkedList<String> path = new LinkedList<>();
+    // step is the final destination
     String step = destination;
-
+    // loop through predecessors
     while (!step.equals(source) && predecessors.containsKey(step)) {
       path.addFirst(stateNameMap.get(step)); // Convert code back to name
       step = predecessors.get(step);
     }
-
+    // add source to path
     if (!path.isEmpty()) {
       path.addFirst(stateNameMap.get(source)); // Convert source code back to name
     }
-
     return path;
   }
 
-  public String formatPath(String country1, String country2, int distance) {
-    String returnString = country1 + " --> " + country2 + " (" + distance + " km.)";
-    return returnString;
+  public String formatPath(HashMap<String, String> predecessors) {
+
+    // String returnString = country1 + " --> " + country2 + " (" + distance + "
+    // km.)";
+    return "returnString";
   }
 
   /*
@@ -222,7 +271,7 @@ public class IRoadTrip {
   }
 
   public static void main(String[] args) {
-    System.out.println("Starting IRoadTrip...");
+    // create main object
     IRoadTrip roadTrip = new IRoadTrip(args);
     // get hashmaps
     HashMap<String, Integer> capDistMap = roadTrip.capDistMap;
@@ -231,25 +280,23 @@ public class IRoadTrip {
     HashMap<String, String> reverseStateMap = roadTrip.reverseStateMap;
     HashMap<String, String> edgeCases = roadTrip.edgeCases;
     HashMap<String, String> edgeCasesbyString = roadTrip.edgeCasesbyString;
-
-    System.out.println("Starting graph...");
     // build graph object
     Graph graph = new Graph(capDistMap, stateNameMap, bordersMap, reverseStateMap, edgeCases, edgeCasesbyString);
-    System.out.println("Graph object made..");
     // build graph
     graph.buildGraph();
-    // graph.printGraph();
-    System.out.println("Graph built...");
+    // get user input
     String inputCountries = roadTrip.acceptUserInput();
     // string split to get input countries
     String[] countries = inputCountries.split("_");
     String country1 = countries[0];
     String country2 = countries[1];
-
+    // get path and distance
     List<String> path = roadTrip.findPath(country1, country2, graph);
-    // print path
+    int distance = roadTrip.getDistance(country1, country2, graph);
+    // print results
     for (String s : path) {
-      System.out.println(s);
+      System.out.println("country " + s);
     }
+    System.out.println("distance between " + country1 + " and " + country2 + " is " + distance);
   }
 }

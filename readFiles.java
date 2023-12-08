@@ -20,16 +20,15 @@ public class readFiles {
 		readStateName(stateNameMap, reverseStateMap);
 		// use previously made map to filter out invalid countries
 		readBorders(bordersMap, reverseStateMap, edgeCasesbyString);
-
-		readCapDist(capDistMap, bordersMap, stateNameMap);
-
+		// use previously made maps to filter out invalid countries and get distances
+		// between bordering countries
+		readCapDist(capDistMap, bordersMap, stateNameMap, reverseStateMap, edgeCases);
 	}
 
 	// method to check if a country is an edge case
 	public void readEdgeCases(HashMap<String, String> edgeCases, HashMap<String, String> edgeCasesbyString) {
 		try {
-			// check to see if it is an edge case
-			// read in edge cases file
+			// check to see if it is an edge case read in edge cases file
 			// make reader
 			BufferedReader bufReader = new BufferedReader(new FileReader("edgecases.tsv"));
 			// make string and string array to hold values
@@ -45,7 +44,6 @@ public class readFiles {
 				String stringState = "";
 				// loop through values to check if it is an edge case
 				for (int p = 0; p < currentValues.length; p++) {
-					// System.out.println("current value at " + p + "is: " + currentValues[p]);
 					// get 0, which is the country code
 					if (p == 0) {
 						code = currentValues[p];
@@ -60,8 +58,6 @@ public class readFiles {
 				// put in edge cases hashmap
 				edgeCases.put(code, stringState + "_" + stringBorders);
 				edgeCasesbyString.put(stringState, code);
-				// System.out.println();
-
 			}
 			bufReader.close();
 		} catch (Exception e) {
@@ -70,8 +66,7 @@ public class readFiles {
 	}
 
 	// read state_name
-	public void readStateName(HashMap<String, String> mapName, HashMap<String, String> reverseStateMap) {
-		System.out.println("Starting readStateName...");
+	public void readStateName(HashMap<String, String> stateMap, HashMap<String, String> reverseStateMap) {
 		// read files using buffered reader
 		try {
 			// make reader
@@ -91,10 +86,13 @@ public class readFiles {
 					// get the second and fourth values, which are the country names
 					if (i == 1) {
 						c1 = currentValues[i];
+						System.out.println("country 1 " + c1);
 					} else if (i == 2) {
 						c2 += currentValues[i];
+						System.out.println("country name " + c2);
 					} else if (i == 4) {
 						value += currentValues[i] + "\n";
+						System.out.println("date " + value);
 					} else {
 						continue;
 					}
@@ -102,7 +100,7 @@ public class readFiles {
 				// make sure the country still exists, aka the date is 2020-12-31
 				if (value.equals("2020-12-31\n")) {
 					// add to hashmap
-					mapName.put(c1, c2);
+					stateMap.put(c1, c2);
 					reverseStateMap.put(c2, c1);
 				}
 			}
@@ -110,14 +108,15 @@ public class readFiles {
 		} catch (Exception e) {
 			System.out.println("Error in readFile: " + e);
 		}
-
-		System.out.println(reverseStateMap);
 	}
 
 	// read capdist
-	public void readCapDist(HashMap<String, Integer> mapName, HashMap<String, List<String>> bordersMap, HashMap<String, String> stateNameMap) {
+	public void readCapDist(HashMap<String, Integer> mapName, HashMap<String, List<String>> bordersMap,
+			HashMap<String, String> stateNameMap, HashMap<String, String> reverseStateMap,
+			HashMap<String, String> edgeCases) {
 		System.out.println("Starting readCapDist...");
 		// read files using buffered reader
+		int count = 0;
 		try {
 			BufferedReader reader1 = new BufferedReader(new FileReader("capdist.csv"));
 			// put each value in a list
@@ -131,58 +130,52 @@ public class readFiles {
 				String key = "";
 				int value = 0;
 				// split current line based on comma
+				// System.out.println("current line : " + strCurrentLine);
 				currentValues = strCurrentLine.split(",");
-				for (int i = 1; i < currentValues.length; i++) {
-					// get the second and fourth values, which are the country names
-					if (i == 1) {
-						key += currentValues[i] + "_";
-					} else if (i == 3) {
-						key += currentValues[i];
-						// get the fifth value, which is the distance
-					} else if (i == 4) {
-						value = Integer.parseInt(currentValues[i]);
-					} else {
-						continue;
+				if (currentValues != null) {
+					for (int i = 0; i < 5; i++) {
+						// get the second and fourth values, which are the country names
+						if (i == 1) {
+							key += currentValues[i] + "_";
+						} else if (i == 3) {
+							key += currentValues[i];
+							// get the fifth value, which is the distance
+						} else if (i == 4) {
+							value = Integer.parseInt(currentValues[i]);
+							// System.out.println("trying to get distance");
+							// System.out.println("distance " + value);
+						} else {
+							continue;
+						}
 					}
-				}
-			
-				// compare against stateNameMap to make sure the country still exists
-				// split key again to get the two countries
-				// check against borders to make sure the countries border each other
-				String[] countries = key.split("_");
-				String country1 = countries[0];
-				String country2Original = countries[1]; // Save the original country2
-				if (stateNameMap.get(country1) != null && stateNameMap.get(country2Original) != null) {
-					System.out.println("country1: " + country1);
-					System.out.println("country2: " + country2Original);
-				
-				List<String> internalMap = bordersMap.get(country1);
-				System.out.println("internal map " + internalMap);
-				//System.out.println(country1 + " " + country2);
-				if (internalMap != null) {
-					for (int r = 0; r < internalMap.size(); r++) {
-						String countryname = internalMap.get(r);
-						//	System.out.println(countryname);
-						// convert countryname to string 
-						String country2Converted = stateNameMap.get(country2Original);
-						// convert countryname to code
-						//	System.out.println(countryname + " == " + country2);
-						//countryname = reverseStateMap.get(countryname);
-						if (countryname.equals(country2Converted)) {
-							String newKey = country1 + "_" + country2Original;
-							if (!mapName.containsKey(newKey)) { // Check if the key is already present
-								mapName.put(newKey, value);
+					// compare against stateNameMap to make sure the country still exists
+					// split key again to get the two countries
+					String[] countries = key.split("_");
+					String country1 = countries[0];
+					String country2 = countries[1];
+					if (stateNameMap.get(country1) != null || stateNameMap.get(country2) != null) {
+						// check against borders to make sure the countries border each other
+						List<String> internalMap = bordersMap.get(country1);
+						if (internalMap != null) {
+							for (int r = 0; r < internalMap.size() - 1; r++) {
+								String countryname = internalMap.get(r);
+								String countryCode = reverseStateMap.get(countryname);
+								if (countryCode != null && countryCode.equals(country2)) {
+									if (!mapName.containsKey(key)) { // Check if the key is already present
+										mapName.put(key, value);
+										count++;
+									}
+								}
 							}
 						}
 					}
 				}
-				}
 			}
+			System.out.println("count " + count);
 			reader1.close();
 		} catch (Exception e) {
 			System.out.println("Error in readFile: " + e);
 		}
-		System.out.println(mapName);
 	}
 
 	// read borders
@@ -217,28 +210,21 @@ public class readFiles {
 						borderCountries.add(borderCountry);
 					}
 				}
-				// put main country and list of its bordering countries into the hashmap
-				// make sure to exclude islands
-				if (borderCountries.size() > 0) {
-					if (reverseStateMap.get(countryName) == null) {
-						// check if its an edge case
-						String code = edgeCasesbyString.get(countryName);
-						if (code != null) {
-							countryName = code;
-						} else {
-							continue;
-						}
+				// put main country and list of its bordering countries into the hashmap convert
+				// countries to codes
+				String countryCode = reverseStateMap.get(countryName);
+				if (countryName == null || countryCode == null) {
+					countryCode = edgeCasesbyString.get(countryName);
+					if (countryCode != null) {
+						mapName.put(countryCode, borderCountries);
 					}
-					countryName = reverseStateMap.get(countryName);
-					mapName.put(countryName, borderCountries);
-
+				} else {
+					mapName.put(countryCode, borderCountries);
 				}
-
 			}
 			reader3.close();
 		} catch (Exception e) {
 			System.out.println("Error in readFile: " + e);
 		}
-		System.out.println(mapName);
 	}
 }

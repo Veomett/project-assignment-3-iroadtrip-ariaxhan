@@ -1,17 +1,29 @@
 
-import java.util.AbstractMap;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import java.util.PriorityQueue;
 import java.util.Set;
 
 public class Graph {
-    // use Integer max value instead of infinity for path and cost
-    private final int INFINITY = Integer.MAX_VALUE;
-    // global variables
-            LinkedList<String> graphCountryKeys = new LinkedList<String>();
+    /*
+     * class variables
+     * 
+     * @param capDistMap: hashmap of country codes and distances between capitals
+     * 
+     * @param stateNameMap: hashmap of country codes and country names
+     * 
+     * @param bordersMap: hashmap of country codes and list of bordering countries
+     * 
+     * @param reverseStateMap: hashmap of country names and country codes
+     * 
+     * @param edgeCases: hashmap of country codes and edge cases
+     * 
+     * @param edgeCasesbyString: hashmap of country names and country codes
+     * 
+     * @param graph: hashmap of country codes and hashmaps of adjacent countries and
+     * distances
+     * 
+     * @param keys: set of keys for the graph
+     */
     HashMap<String, Integer> capDistMap = new HashMap<String, Integer>();
     HashMap<String, String> stateNameMap = new HashMap<String, String>();
     HashMap<String, List<String>> bordersMap = new HashMap<String, List<String>>();
@@ -30,7 +42,6 @@ public class Graph {
             HashMap<String, String> edgeCases,
             HashMap<String, String> edgeCasesbyString) {
         // countries and their distances as the value
-        this.graphCountryKeys = new LinkedList<String>();
         this.graph = new HashMap<String, HashMap<String, Integer>>();
         this.keys = this.graph.keySet();
         this.capDistMap = capDistMap;
@@ -41,16 +52,29 @@ public class Graph {
         this.edgeCasesbyString = edgeCasesbyString;
     }
 
-    // function to return the distance between two countries
+    /*
+     * function to return the distance between two countries
+     * 
+     * @param country1: string of country 1
+     * 
+     * @param country2: string of country 2
+     * 
+     * @return distance: integer of distance between countries
+     */
     public int returnGraphDist(String country1, String country2) {
         // initialize distance
         int distance = 0;
-        // get code for country name
+        // get country code for country 1
         String countryCode = reverseStateMap.get(country1);
+        // get hashmap of bordering countries
         HashMap<String, Integer> borderCountries = this.graph.get(countryCode);
+        // get the keys for the hashmap
         Set<String> codeKeys = borderCountries.keySet();
+        // loop over the keys
         for (String country : codeKeys) {
-            if (country.equals(country2)) {
+            // get the country code for the current country
+            String country2Code = reverseStateMap.get(country2);
+            if (country.equals(country2Code)) {
                 // if the country is found, get the distance
                 distance = borderCountries.get(country);
             }
@@ -58,21 +82,24 @@ public class Graph {
         return distance;
     }
 
-    // function to build the graph
-    // method to build the graph from data (hashmaps)
+    /*
+     * function to build the graph from hashmaps
+     * 
+     * @param countryCode: set of country codes
+     * 
+     * @param borderingCountries: list of bordering countries
+     * 
+     * #param innerHashMap: hashmap of bordering countries and distances
+     */
     public void buildGraph() {
-        System.out.println("BuildGraph function entered");
         // Get all of the country codes from the state name hashmap
         Set<String> countryCode = stateNameMap.keySet();
-        // System.out.println(countryCode);
         // Loop over the country codes
         for (String country : countryCode) {
-            // Get the country name
-            String countryString = stateNameMap.get(country);
-            // System.out.println("Country string: " + countryString);
-            // Get list of bordering countries, initializing variable
+            // Initialize variable for list of bordering countries
             List<String> borderingCountries = null;
-            borderingCountries = bordersMap.get(countryString);
+            // get the list of bordering countries from the borders hashmap
+            borderingCountries = bordersMap.get(country);
             // check if bordering countries exist
             if (borderingCountries == null) {
                 // check if it is an edge case, using the code to check
@@ -80,9 +107,9 @@ public class Graph {
                 // if it is an edge case
                 if (countryasBorderString != null) {
                     borderingCountries = bordersMap.get(countryasBorderString);
-                    // System.out.println("edge case: " + countryasBorderString);
                 } else {
                     // the country is not an edge case nor a valid country
+                    continue;
                 }
             }
             // check if bordering countries are still null, proceed if they are not
@@ -97,27 +124,27 @@ public class Graph {
                     }
                     // get the country code for the current bordering country
                     String borderingCountryCode = reverseStateMap.get(borderingCountry);
-                    // System.out.println("bordering country code: " + borderingCountryCode);
-
                     // if it is null, check if it is an edge case
                     if (borderingCountryCode == null) {
                         borderingCountryCode = checkEdgeCasebyString(borderingCountry, edgeCasesbyString);
                     }
-                    String key = country + "_" + borderingCountryCode;
-                    Integer distance = capDistMap.get(key);
-                    if (distance != null) {
-                        innerHashMap.put(borderingCountry, distance);
-                        // put inner hashmap into the graph
-                        graph.put(country, innerHashMap);
-                        // create list of countries as keys
-                        graphCountryKeys.add(country);
-                        System.out.println(country);
+                    if (borderingCountryCode != null) {
+                        String key = country + "_" + borderingCountryCode;
+                        Integer distance = capDistMap.get(key);
+                        if (distance != null) {
+                            innerHashMap.put(borderingCountryCode, distance);
+                            // put inner hashmap into the graph
+                            graph.put(country, innerHashMap);
+                        }
                     }
                 }
             }
         }
     }
 
+    /*
+     * function to check if a country is an edge case when given the code
+     */
     public String checkEdgeCasebyCode(String countryCode, HashMap<String, String> edgeCases) {
         // check if given country code is in edge cases
         for (String code : edgeCases.keySet()) {
@@ -136,6 +163,10 @@ public class Graph {
         return null;
     }
 
+    /*
+     * function to check if a country is an edge case when given the string
+     */
+
     public String checkEdgeCasebyString(String countryString, HashMap<String, String> edgeCasesbyString) {
         // check if given country code is in edge cases
         for (String string : edgeCasesbyString.keySet()) {
@@ -150,11 +181,11 @@ public class Graph {
         return null;
     }
 
+    // function to print the graph
     public void printGraph() {
         for (String country : graph.keySet()) {
             System.out.println(country + ": " + this.graph.get(country));
         }
     }
 
-   
 }
